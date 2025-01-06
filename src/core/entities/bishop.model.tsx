@@ -2,8 +2,11 @@ import Position from "../interfaces/position";
 import Piece from "./piece.model";
 
 export default class Bishop extends Piece {
+    value: number;
+
     constructor(position: Position) {
         super(position);
+        this.value = 3;
     }
 
     getMovements(): Array<Position> {

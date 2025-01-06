@@ -2,13 +2,16 @@ import Position from "../interfaces/position";
 import Piece from "./piece.model";
 
 export default class Queen extends Piece {
+    value: number;
+
     constructor(position: Position) {
         super(position);
+        this.value = 9;
     }
 
     getMovements(): Array<Position> {
         const movements: Array<Position> = [];
-        let newPosition: Position = this.position;
+        let newPosition: Position;
 
         const directions = [
             { dx: 1, dy: 0 },

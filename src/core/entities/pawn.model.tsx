@@ -2,11 +2,13 @@ import Position from "../interfaces/position";
 import Piece from "./piece.model";
 
 export default class Pawn extends Piece {
+    value: number;
     isFirstMove: boolean;
 
     constructor(position: Position) {
         super(position);
         this.isFirstMove = true;
+        this.value = 1;
     }
 
     getMovements(canEatLeft?: boolean, canEatRight?: boolean): Array<Position> {
