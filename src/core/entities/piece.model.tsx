@@ -1,13 +1,24 @@
 import Position from "../interfaces/position";
 
 export default abstract class Piece {
-    protected position: Position;
+    public position: Position;
+    public inLife: boolean;
 
     constructor(position: Position) {
         this.position = position;
+        this.inLife = true;
     }
 
-    abstract move(): void;
-    abstract eat(): void;
-    abstract getAccessibleBoxes(): Array<Position>;
+    public move(position: Position, piece?: Piece): void {
+        if(piece){
+            this.eat(piece);
+        }
+        this.position = position;
+    }
+
+    public eat(piece: Piece): void {
+        piece.inLife = false;
+    }
+
+    abstract getMovements(): Array<Position>;
 }

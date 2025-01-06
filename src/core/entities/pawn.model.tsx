@@ -7,19 +7,21 @@ export default class Pawn extends Piece {
         super(position);
     }
 
-    move(): void {
-        this.position.vertical += 1;
-    }
+    getMovements(canEatLeft?: boolean, canEatRight?: boolean): Array<Position> {
+        const movements: Array<Position> = [];
+        let newPosition: Position = this.position;
 
-    eat(): void {
-        
-    }
-
-    getAccessibleBoxes(): Array<Position> {
-        let boxes: Array<Position> = [];
-        if(this.position){
-
+        newPosition.vertical += 1;
+        movements.push(newPosition);
+        if(canEatRight) {
+            newPosition.horizontal = this.position.horizontal + 1;
+            movements.push(newPosition);
         }
-        return boxes;
+        if(canEatLeft) {
+            newPosition.horizontal = this.position.horizontal - 1;
+            movements.push(newPosition);
+        }
+
+        return movements;
     }
 }
