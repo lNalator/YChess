@@ -27,6 +27,7 @@ export default function Home() {
       <p>deadline : {deadline}</p>
       <Timer chosenDeadline={Date.now() + deadline}></Timer>
       <Grid></Grid>
+      <StartButton></StartButton>
     </main>
   );
 }
