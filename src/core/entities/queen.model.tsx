@@ -1,11 +1,12 @@
+import { ColorEnum } from "../enums/color.enum";
 import Position from "../interfaces/position";
 import Piece from "./piece.model";
 
 export default class Queen extends Piece {
     value: number;
 
-    constructor(position: Position) {
-        super(position);
+    constructor(position: Position, color: ColorEnum) {
+        super(position, color);
         this.value = 9;
     }
 
