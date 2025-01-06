@@ -9,7 +9,7 @@ export default class Bishop extends Piece {
     getMovements(): Array<Position> {
         const movements: Array<Position> = [];
 
-        let newPosition: Position = this.position;
+        let newPosition: Position;
         
         const directions = [
             { dx: 1, dy: 1 },
