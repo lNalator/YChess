@@ -1,13 +1,16 @@
+"use client";
 import Box from "./Box";
 import Row from "./Row";
 import "./board.css";
 
 export default function Grid() {
+  const nbFiles = 8;
+  
   return (
     <div className="grid">
-      {[...Array(8)].map((_, i) => (
+      {[...Array(nbFiles)].map((_, i) => (
         <Row key={i} className="row">
-          {[...Array(8)].map((_, x) => (
+          {[...Array(nbFiles)].map((_, x) => (
             <Box key={x} className={((i + x) % 2 ? "light" : "dark") + " box"}>
               {i},{x}
             </Box>
