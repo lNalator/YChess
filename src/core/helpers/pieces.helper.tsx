@@ -72,4 +72,8 @@ export default class PiecesHelper {
         const piece = PiecesHelper.getPieceByPosition(newPos, allPieces);
         return piece !== null && piece.color !== color;
     };
+    static isKingChecked(allPieces: Array<Piece>, color: ColorEnum): boolean {
+        const king: King = allPieces.filter(piece => piece.color === color && piece instanceof King)[0] as King;
+        return king.isChecked;
+    }
 }
