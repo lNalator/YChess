@@ -1,4 +1,5 @@
 import { ColorEnum } from "../enums/color.enum";
+import PiecesHelper from "../helpers/pieces.helper";
 import Position from "../interfaces/position";
 import Piece from "./piece.model";
 
@@ -12,23 +13,36 @@ export default class Pawn extends Piece {
         this.value = 1;
     }
 
-    getMovements(canEatLeft?: boolean, canEatRight?: boolean): Array<Position> {
+    public move(position: Position, piece?: Piece): void {
+        this.isFirstMove = false;
+        if(piece){
+            this.eat(piece);
+        }
+        this.position = position;
+    }
+
+    getMovements(allPieces: Array<Piece>): Array<Position> {
         const movements: Array<Position> = [];
         const newPosition: Position = this.position;
-
+        
         newPosition.vertical += 1;
-        movements.push(newPosition);
-        if(this.isFirstMove) {
-            newPosition.vertical += 1;
+        if(PiecesHelper.getPieceByPosition(newPosition, allPieces)) {
             movements.push(newPosition);
-            newPosition.vertical -= 1;
+            if(this.isFirstMove) {
+                newPosition.vertical += 1;
+                if(PiecesHelper.getPieceByPosition(newPosition, allPieces)) {
+                    movements.push(newPosition);
+                }
+                newPosition.vertical -= 1;
+            }
         }
-        if(canEatRight) {
-            newPosition.horizontal = this.position.horizontal + 1;
+        
+        newPosition.horizontal = this.position.horizontal + 1;
+        if(PiecesHelper.getPieceByPosition(newPosition, allPieces)?.color !== this.color) {
             movements.push(newPosition);
         }
-        if(canEatLeft) {
-            newPosition.horizontal = this.position.horizontal - 1;
+        newPosition.horizontal = this.position.horizontal - 1;
+        if(PiecesHelper.getPieceByPosition(newPosition, allPieces)?.color !== this.color) {
             movements.push(newPosition);
         }
 
