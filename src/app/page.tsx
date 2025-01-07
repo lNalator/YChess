@@ -13,7 +13,7 @@ export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(true);
   const [isPlayer1Playing, setIsPlayer1Playing] = useState(true);
 
-  function handleMenuClicked(e: any) {
+  function handleMenuClicked(e?: any) {
     if (e) setTime(e);
     setIsMenuOpen(!isMenuOpen);
   }
@@ -30,7 +30,7 @@ export default function Home() {
 
   return (
     <main id="main" suppressHydrationWarning={true}>
-      <button className="menu-button" onClick={handleMenuClicked}>
+      <button className="menu-button" onClick={() => handleMenuClicked()}>
         Menu
       </button>
       <MenuOverlay

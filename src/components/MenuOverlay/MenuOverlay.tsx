@@ -18,7 +18,6 @@ export default function MenuOverlay({
           <p>Choose your time limit</p>
           <select
             className="menu-select"
-            defaultValue={0}
             onChange={(e) => {
               setTimeLimit(parseInt(e.target.value));
             }}
