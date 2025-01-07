@@ -1,9 +1,13 @@
+import { useState } from "react";
 "use client";
 import Timer from "@/components/Timer/Timer";
 import Grid from "@/components/Board/Grid";
 import MenuOverlay from "@/components/MenuOverlay/MenuOverlay";
 import { useState } from "react";
 import "./page.css";
+import PiecesHelper from "@/core/helpers/pieces.helper";
+import { ColorEnum } from "@/core/enums/color.enum";
+import Piece from "@/core/entities/piece.model";
 
 export default function Home() {
   const [time, setTime] = useState(0);
@@ -17,6 +21,12 @@ export default function Home() {
 
   function handleTurnClicked() {
     setIsPlayer1Playing(!isPlayer1Playing);
+  }
+
+  function startGame(): void {
+    const whiteTeam: Array<Piece> = PiecesHelper.createTeam(ColorEnum.WHITE);
+    const blackTeam: Array<Piece> = PiecesHelper.createTeam(ColorEnum.BLACK);
+    const [allPieces, setAllPieces] = useState([...whiteTeam, ...blackTeam]);
   }
 
   return (
