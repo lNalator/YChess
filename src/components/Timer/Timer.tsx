@@ -15,7 +15,6 @@ export default function Timer({
   const [time, setTime] = useState(chosenTime);
 
   const getTime = (timing: number) => {
-    console.log(timing);
     if (timing <= 0) {
       setMinutes(0);
       setSeconds(0);
