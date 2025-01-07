@@ -1,8 +1,8 @@
+import { useState } from "react";
 "use client";
 import Timer from "@/components/Timer/Timer";
 import "./page.css";
 import Grid from "@/components/Board/Grid";
-import { useState } from "react";
 import PiecesHelper from "@/core/helpers/pieces.helper";
 import { ColorEnum } from "@/core/enums/color.enum";
 import Piece from "@/core/entities/piece.model";
