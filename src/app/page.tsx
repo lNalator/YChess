@@ -1,32 +1,52 @@
 "use client";
 import Timer from "@/components/Timer/Timer";
-import "./page.css";
 import Grid from "@/components/Board/Grid";
+import MenuOverlay from "@/components/MenuOverlay/MenuOverlay";
 import { useState } from "react";
+import "./page.css";
 
 export default function Home() {
-  const [deadline, setDeadline] = useState(0);
+  const [time, setTime] = useState(0);
+  const [isMenuOpen, setIsMenuOpen] = useState(true);
+  const [isPlayer1Playing, setIsPlayer1Playing] = useState(true);
+
+  function handleMenuClicked(e: any) {
+    if (e) setTime(e);
+    setIsMenuOpen(!isMenuOpen);
+  }
+
+  function handleTurnClicked() {
+    setIsPlayer1Playing(!isPlayer1Playing);
+  }
 
   return (
     <main id="main" suppressHydrationWarning={true}>
-      <div>
-        <select
-          className="menu"
-          value={deadline}
-          onChange={(e) => {
-            console.log(e.target.value);
-            setDeadline(parseInt(e.target.value));
-          }}
-        >
-          <option value={300000}>5 min</option>
-          <option value={600000}>10 min</option>
-          <option value={900000}>15 min</option>
-        </select>
-      </div>
+      <button className="menu-button" onClick={handleMenuClicked}>
+        Menu
+      </button>
+      <MenuOverlay
+        onClickFunction={(e) => {
+          handleMenuClicked(e);
+        }}
+        open={isMenuOpen}
+      ></MenuOverlay>
 
-      <p>deadline : {deadline}</p>
-      <Timer chosenDeadline={Date.now() + deadline}></Timer>
-      <Grid></Grid>
+      <div className="timerContainers">
+        <div className="timers">
+          <Timer
+            chosenTime={time}
+            isPlaying={isPlayer1Playing}
+            className="player1"
+          />
+          <Timer
+            chosenTime={time}
+            isPlaying={!isPlayer1Playing}
+            className="player2"
+          />
+        </div>
+        <button onClick={handleTurnClicked}>Change turn</button>
+      </div>
+      <Grid />
     </main>
   );
 }

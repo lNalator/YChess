@@ -1,30 +1,53 @@
 import { useEffect, useState } from "react";
 import "./timer.css";
 
-export default function Timer({ chosenDeadline }: { chosenDeadline: number }) {
+export default function Timer({
+  chosenTime,
+  className,
+  isPlaying,
+}: Readonly<{
+  chosenTime: number;
+  isPlaying?: boolean;
+  className?: string;
+}>) {
   const [minutes, setMinutes] = useState(0);
   const [seconds, setSeconds] = useState(0);
+  const [time, setTime] = useState(chosenTime);
 
-  const getTime = (deadline: number) => {
-    let time = deadline - Date.now();
-    setMinutes(Math.floor((time / 1000 / 60) % 60));
-    setSeconds(Math.floor((time / 1000) % 60));
+  const getTime = (timing: number) => {
+    console.log(timing);
+    if (timing <= 0) {
+      setMinutes(0);
+      setSeconds(0);
+      return true;
+    }
+    setTime(time - 1);
+    setMinutes(Math.floor((timing / 60) % 60));
+    setSeconds(Math.floor(timing % 60));
+    return false;
   };
 
   useEffect(() => {
-    setMinutes(0);
-    setSeconds(0);
-    const interval = setInterval(() => getTime(chosenDeadline), 1000);
+    getTime(chosenTime);
+  }, [chosenTime]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (isPlaying && getTime(time)) {
+        clearInterval(interval);
+      }
+    }, 1000);
 
     return () => clearInterval(interval);
-  }, [chosenDeadline]);
+  }, [time, isPlaying]);
+
   return (
-    <div className="timer">
+    <div className={"timer " + className}>
       <div className="minute">
-        <p>{minutes}</p>
+        <p>{minutes < 10 ? `0${minutes}` : minutes}</p>
       </div>
       <div className="second">
-        <p>{seconds}</p>
+        <p>{seconds < 10 ? `0${seconds}` : seconds}</p>
       </div>
     </div>
   );
