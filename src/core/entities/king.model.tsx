@@ -1,15 +1,29 @@
+import { ColorEnum } from "../enums/color.enum";
+import PiecesHelper from "../helpers/pieces.helper";
 import Position from "../interfaces/position";
 import Piece from "./piece.model";
 
 export default class King extends Piece {
     value: number;
+    isChecked: boolean;
+    isFirstMove: boolean;
 
-    constructor(position: Position) {
-        super(position);
+    constructor(position: Position, color: ColorEnum) {
+        super(position, color);
         this.value = 100;
+        this.isChecked = false;
+        this.isFirstMove = true;
     }
 
-    getMovements(): Array<Position> {
+    public move(position: Position, piece?: Piece): void {
+        this.isFirstMove = false;
+        if(piece){
+            this.eat(piece);
+        }
+        this.position = position;
+    }
+
+    getMovements(allPieces: Array<Piece>): Array<Position> {
         const movements: Array<Position> = [];
         let newPosition: Position = this.position;
 
@@ -30,13 +44,7 @@ export default class King extends Piece {
             newPosition.horizontal += direction.dx;
             newPosition.vertical += direction.dy;
 
-            if (
-                newPosition !== this.position &&
-                newPosition.vertical >= 0 &&
-                newPosition.vertical < 8 &&
-                newPosition.horizontal >= 0 &&
-                newPosition.horizontal < 8
-            ) {
+            if (PiecesHelper.isValidPosition(newPosition, allPieces)) {
                 movements.push(newPosition);
             }
         }
