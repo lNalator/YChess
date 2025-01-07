@@ -24,5 +24,5 @@ export default abstract class Piece {
         piece.isAlive = false;
     }
 
-    abstract getMovements(): Array<Position>;
+    abstract getMovements(allPieces: Array<Piece>): Array<Position>;
 }

@@ -1,4 +1,5 @@
 import { ColorEnum } from "../enums/color.enum";
+import PiecesHelper from "../helpers/pieces.helper";
 import Position from "../interfaces/position";
 import Piece from "./piece.model";
 
@@ -10,7 +11,7 @@ export default class Knight extends Piece {
         this.value = 3;
     }
 
-    getMovements(): Array<Position> {
+    getMovements(allPieces: Array<Piece>): Array<Position> {
         const movements: Array<Position> = [];
         let newPosition: Position;
 
@@ -32,11 +33,11 @@ export default class Knight extends Piece {
             newPosition.vertical += direction.dy;
 
             if (
-                newPosition !== this.position &&
                 newPosition.vertical >= 0 &&
                 newPosition.vertical < 8 &&
                 newPosition.horizontal >= 0 &&
-                newPosition.horizontal < 8
+                newPosition.horizontal < 8 &&
+                PiecesHelper.getPieceByPosition(newPosition, allPieces)?.color !== this.color
             ) {
                 movements.push(newPosition);
             }
