@@ -1,12 +1,12 @@
-import { useState } from "react";
 "use client";
+import { useState } from "react";
 import Timer from "@/components/Timer/Timer";
 import Grid from "@/components/Board/Grid";
 import MenuOverlay from "@/components/MenuOverlay/MenuOverlay";
-import "./page.css";
 import PiecesHelper from "@/core/helpers/pieces.helper";
 import { ColorEnum } from "@/core/enums/color.enum";
 import Piece from "@/core/entities/piece.model";
+import "./page.css";
 
 export default function Home() {
   const [time, setTime] = useState(0);
