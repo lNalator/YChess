@@ -72,8 +72,47 @@ export default class PiecesHelper {
         const piece = PiecesHelper.getPieceByPosition(newPos, allPieces);
         return piece !== null && piece.color !== color;
     };
+
     static isKingChecked(allPieces: Array<Piece>, color: ColorEnum): boolean {
         const king: King = allPieces.filter(piece => piece.color === color && piece instanceof King)[0] as King;
         return king.isChecked;
+    }
+
+    static canSmallCastle(king: King, allPieces: Array<Piece>): boolean {
+        let position: Position = king.position;
+        position.horizontal += 3;
+        const piece = this.getPieceByPosition(position, allPieces);
+        const rock: Rock = piece as Rock;
+        if(king.isChecked || !king.isFirstMove || piece === null || !rock.isFirstMove) {
+            return false;
+        }
+        position.horizontal -= 1;
+        if(this.getPieceByPosition(position, allPieces) === null) {
+            position.horizontal -= 1;
+            if(this.getPieceByPosition(position, allPieces) === null){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    static canLargeCastle(king: King, allPieces: Array<Piece>): boolean {
+        let position: Position = king.position;
+        position.horizontal -= 4;
+        const piece = this.getPieceByPosition(position, allPieces);
+        const rock: Rock = piece as Rock;
+        if(king.isChecked || !king.isFirstMove || piece === null || !rock.isFirstMove) {
+            return false;
+        }
+        position.horizontal += 1;
+        if(this.getPieceByPosition(position, allPieces) === null) {
+            position.horizontal += 1;
+            if(this.getPieceByPosition(position, allPieces) === null){
+                if(this.getPieceByPosition(position, allPieces) === null){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

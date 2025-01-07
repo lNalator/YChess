@@ -49,6 +49,18 @@ export default class King extends Piece {
             }
         }
 
+        if(PiecesHelper.canSmallCastle(this, allPieces)) {
+            newPosition = { ...this.position };
+            newPosition.horizontal += 2;
+            movements.push(newPosition);
+        }
+
+        if(PiecesHelper.canLargeCastle(this, allPieces)) {
+            newPosition = { ...this.position };
+            newPosition.horizontal -= 2;
+            movements.push(newPosition);
+        }
+
         return movements;
     }
 }
