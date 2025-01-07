@@ -5,10 +5,20 @@ import Piece from "./piece.model";
 
 export default class Rock extends Piece {
     value: number;
+    isFirstMove: boolean;
 
     constructor(position: Position, color: ColorEnum) {
         super(position, color);
         this.value = 5;
+        this.isFirstMove = true;
+    }
+
+    public move(position: Position, piece?: Piece): void {
+        this.isFirstMove = false;
+        if(piece){
+            this.eat(piece);
+        }
+        this.position = position;
     }
     
     getMovements(allPieces: Array<Piece>): Array<Position> {

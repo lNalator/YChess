@@ -5,10 +5,22 @@ import Piece from "./piece.model";
 
 export default class King extends Piece {
     value: number;
+    isChecked: boolean;
+    isFirstMove: boolean;
 
     constructor(position: Position, color: ColorEnum) {
         super(position, color);
         this.value = 100;
+        this.isChecked = false;
+        this.isFirstMove = true;
+    }
+
+    public move(position: Position, piece?: Piece): void {
+        this.isFirstMove = false;
+        if(piece){
+            this.eat(piece);
+        }
+        this.position = position;
     }
 
     getMovements(allPieces: Array<Piece>): Array<Position> {
