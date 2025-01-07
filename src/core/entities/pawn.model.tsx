@@ -6,10 +6,12 @@ import Piece from "./piece.model";
 export default class Pawn extends Piece {
     value: number;
     isFirstMove: boolean;
+    doubleJump: boolean;
 
     constructor(position: Position, color: ColorEnum) {
         super(position, color);
         this.isFirstMove = true;
+        this.doubleJump = false;
         this.value = 1;
     }
 
@@ -18,22 +20,32 @@ export default class Pawn extends Piece {
         if(piece){
             this.eat(piece);
         }
+        if(position.vertical === this.position.vertical + 2 || position.vertical === this.position.vertical - 2){
+            this.doubleJump = true; //TODO remettre à false lorsque un pion a doubleJump = true et que c'est son tour
+        }
         this.position = position;
     }
 
     getMovements(allPieces: Array<Piece>): Array<Position> {
         const movements: Array<Position> = [];
         const newPosition: Position = this.position;
+        let colorValue: number;
+
+        if(this.color === ColorEnum.WHITE) {
+            colorValue = 1;
+        } else {
+            colorValue = -1;
+        }
         
-        newPosition.vertical += 1;
+        newPosition.vertical += colorValue;
         if(PiecesHelper.getPieceByPosition(newPosition, allPieces)) {
             movements.push(newPosition);
             if(this.isFirstMove) {
-                newPosition.vertical += 1;
+                newPosition.vertical += colorValue;
                 if(PiecesHelper.getPieceByPosition(newPosition, allPieces)) {
                     movements.push(newPosition);
                 }
-                newPosition.vertical -= 1;
+                newPosition.vertical -= colorValue;
             }
         }
         
@@ -44,6 +56,23 @@ export default class Pawn extends Piece {
         newPosition.horizontal = this.position.horizontal - 1;
         if(PiecesHelper.getPieceByPosition(newPosition, allPieces)?.color !== this.color) {
             movements.push(newPosition);
+        }
+
+        newPosition.vertical = this.position.vertical;
+        newPosition.horizontal = this.position.horizontal + 1;
+        if(PiecesHelper.getPieceByPosition(newPosition, allPieces)?.color !== this.color) {
+            const enPassantPawn = PiecesHelper.getPieceByPosition(newPosition, allPieces) as Pawn;
+            if(enPassantPawn.doubleJump){
+                movements.push(newPosition);
+            }
+        }
+        newPosition.horizontal = this.position.horizontal - 1;
+        if(PiecesHelper.getPieceByPosition(newPosition, allPieces)?.color !== this.color) {
+            movements.push(newPosition);
+            const enPassantPawn = PiecesHelper.getPieceByPosition(newPosition, allPieces) as Pawn;
+            if(enPassantPawn.doubleJump){
+                movements.push(newPosition);
+            }
         }
 
         return movements;
