@@ -5,3 +5,42 @@
   flex-direction: column;
   height: 100%;
 }
+
+.timerContainers {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 1rem;
+}
+
+.timerContainers button {
+  width: fit-content;
+}
+
+.timers {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+  width: 100%;
+}
+
+.menu-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 5rem;
+  height: 3.5rem;
+  border-radius: 0 0 0 0.5rem;
+  border: 0;
+}
+
+.menu-button:hover {
+  cursor: pointer;
+}
+
+.menu-button:active {
+  transform: scale(0.95);
+}

@@ -37,6 +37,20 @@ a {
   text-decoration: none;
 }
 
+button {
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+}
+
+button:hover {
+  cursor: pointer;
+}
+
+button:active {
+  transform: scale(0.95);
+}
+
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;
