@@ -6,8 +6,8 @@ import Piece from "./piece.model";
 export default class Knight extends Piece {
     value: number;
 
-    constructor(position: Position, color: ColorEnum) {
-        super(position, color);
+    constructor(position: Position, color: ColorEnum, id: string) {
+        super(position, color, id);
         this.value = 3;
     }
 

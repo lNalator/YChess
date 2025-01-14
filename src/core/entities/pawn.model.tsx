@@ -8,8 +8,8 @@ export default class Pawn extends Piece {
     isFirstMove: boolean;
     doubleJump: boolean;
 
-    constructor(position: Position, color: ColorEnum) {
-        super(position, color);
+    constructor(position: Position, color: ColorEnum, id: string) {
+        super(position, color, id);
         this.isFirstMove = true;
         this.doubleJump = false;
         this.value = 1;
