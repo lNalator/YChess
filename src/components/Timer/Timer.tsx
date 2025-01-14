@@ -20,7 +20,7 @@ export default function Timer({
       setSeconds(0);
       return true;
     }
-    setTime(time - 1);
+    setTime(timing - 1);
     setMinutes(Math.floor((timing / 60) % 60));
     setSeconds(Math.floor(timing % 60));
     return false;

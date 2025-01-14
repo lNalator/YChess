@@ -1,19 +1,19 @@
-import { useState } from "react";
 "use client";
+import { useState } from "react";
 import Timer from "@/components/Timer/Timer";
 import Grid from "@/components/Board/Grid";
 import MenuOverlay from "@/components/MenuOverlay/MenuOverlay";
-import "./page.css";
 import PiecesHelper from "@/core/helpers/pieces.helper";
 import { ColorEnum } from "@/core/enums/color.enum";
 import Piece from "@/core/entities/piece.model";
+import "./page.css";
 
 export default function Home() {
   const [time, setTime] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(true);
   const [isPlayer1Playing, setIsPlayer1Playing] = useState(true);
 
-  function handleMenuClicked(e: any) {
+  function handleMenuClicked(e?: any) {
     if (e) setTime(e);
     setIsMenuOpen(!isMenuOpen);
   }
@@ -30,7 +30,7 @@ export default function Home() {
 
   return (
     <main id="main" suppressHydrationWarning={true}>
-      <button className="menu-button" onClick={handleMenuClicked}>
+      <button className="menu-button" onClick={() => handleMenuClicked()}>
         Menu
       </button>
       <MenuOverlay
