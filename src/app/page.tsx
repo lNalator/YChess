@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Timer from "@/components/Timer/Timer";
 import Grid from "@/components/Board/Grid";
 import MenuOverlay from "@/components/MenuOverlay/MenuOverlay";
@@ -7,8 +7,16 @@ import PiecesHelper from "@/core/helpers/pieces.helper";
 import { ColorEnum } from "@/core/enums/color.enum";
 import Piece from "@/core/entities/piece.model";
 import "./page.css";
+import { atom } from "jotai";
+import Player from "@/core/entities/player.model";
+
+interface GameState {
+  pieces: Array<Piece>;
+  players: Array<Player>;
+}
 
 export default function Home() {
+  const [gameState, setGameState] = useState({} as GameState);
   const [time, setTime] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(true);
   const [isPlayer1Playing, setIsPlayer1Playing] = useState(true);
@@ -22,14 +30,25 @@ export default function Home() {
     setIsPlayer1Playing(!isPlayer1Playing);
   }
 
-  function startGame(): void {
-    const whiteTeam: Array<Piece> = PiecesHelper.createTeam(ColorEnum.WHITE);
-    const blackTeam: Array<Piece> = PiecesHelper.createTeam(ColorEnum.BLACK);
-    const [allPieces, setAllPieces] = useState([...whiteTeam, ...blackTeam]);
+  function startGame(): any {
+    const allPieces = [
+      PiecesHelper.createTeam(ColorEnum.WHITE),
+      PiecesHelper.createTeam(ColorEnum.BLACK),
+    ];
+
+    const player1 = atom(new Player("Player 1", ColorEnum.WHITE, 0));
+    const player2 = atom(new Player("Player 2", ColorEnum.BLACK, 0));
+
+    console.log({ pieces: allPieces, players: [player1, player2] });
+    return { pieces: allPieces, players: [player1, player2] };
   }
 
+  useEffect(() => {
+    setGameState(startGame());
+  }, []);
+
   return (
-    <main id="main" suppressHydrationWarning={true}>
+    <div id="main" suppressHydrationWarning={true}>
       <button className="menu-button" onClick={() => handleMenuClicked()}>
         Menu
       </button>
@@ -55,7 +74,7 @@ export default function Home() {
         </div>
         <button onClick={handleTurnClicked}>Change turn</button>
       </div>
-      <Grid />
-    </main>
+      <Grid piecesState={gameState.pieces || [[]]} />
+    </div>
   );
 }
