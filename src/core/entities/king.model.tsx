@@ -8,8 +8,8 @@ export default class King extends Piece {
     isChecked: boolean;
     isFirstMove: boolean;
 
-    constructor(position: Position, color: ColorEnum) {
-        super(position, color);
+    constructor(position: Position, color: ColorEnum, id: string) {
+        super(position, color, id);
         this.value = 100;
         this.isChecked = false;
         this.isFirstMove = true;
@@ -47,6 +47,18 @@ export default class King extends Piece {
             if (PiecesHelper.isValidPosition(newPosition, allPieces)) {
                 movements.push(newPosition);
             }
+        }
+
+        if(PiecesHelper.canSmallCastle(this, allPieces)) {
+            newPosition = { ...this.position };
+            newPosition.horizontal += 2;
+            movements.push(newPosition);
+        }
+
+        if(PiecesHelper.canLargeCastle(this, allPieces)) {
+            newPosition = { ...this.position };
+            newPosition.horizontal -= 2;
+            movements.push(newPosition);
         }
 
         return movements;

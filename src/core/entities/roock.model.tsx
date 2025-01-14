@@ -3,12 +3,12 @@ import PiecesHelper from "../helpers/pieces.helper";
 import Position from "../interfaces/position";
 import Piece from "./piece.model";
 
-export default class Rock extends Piece {
+export default class Roock extends Piece {
     value: number;
     isFirstMove: boolean;
 
-    constructor(position: Position, color: ColorEnum) {
-        super(position, color);
+    constructor(position: Position, color: ColorEnum, id: string) {
+        super(position, color, id);
         this.value = 5;
         this.isFirstMove = true;
     }

@@ -4,7 +4,7 @@ import Knight from "../entities/knight.model";
 import Pawn from "../entities/pawn.model";
 import Piece from "../entities/piece.model";
 import Queen from "../entities/queen.model";
-import Rock from "../entities/rock.model";
+import Roock from "../entities/roock.model";
 import { ColorEnum } from "../enums/color.enum";
 import Position from "../interfaces/position";
 
@@ -23,28 +23,33 @@ export default class PiecesHelper {
                 horizontal: 0,
             }
         }
+        let idPawn: number = 1;
         while(team.length < 8) {
-            team.push(new Pawn(position, color));
+            team.push(new Pawn(position, color, color + 'Pawn' + idPawn.toString()));
+            idPawn += 1;
             position.horizontal += 1;
         }
 
         position.vertical = color === ColorEnum.WHITE ? 0 : 7;
 
-        team.push(new Rock(position, color));
+        let idPiece: number = 1;
+
+        team.push(new Roock(position, color, color + 'Roock' + idPiece.toString()));
         position.horizontal -= 1;
-        team.push(new Knight(position, color));
+        team.push(new Knight(position, color, color + 'Knight' + idPiece.toString()));
         position.horizontal -= 1;
-        team.push(new Bishop(position, color));
+        team.push(new Bishop(position, color, color + 'Bishop' + idPiece.toString()));
         position.horizontal -= 1;
-        team.push(new Queen(position, color));
+        team.push(new King(position, color, color + 'King' + idPiece.toString()));
         position.horizontal -=1;
-        team.push(new King(position, color));
+        team.push(new Queen(position, color, color + 'Queen' + idPiece.toString()));
         position.horizontal -=1;
-        team.push(new Bishop(position, color));
+        idPiece = 2;
+        team.push(new Bishop(position, color, color + 'Bishop' + idPiece.toString()));
         position.horizontal -= 1;
-        team.push(new Knight(position, color));
+        team.push(new Knight(position, color, color + 'Knight' + idPiece.toString()));
         position.horizontal -= 1;
-        team.push(new Rock(position, color));
+        team.push(new Roock(position, color, color + 'Roock' + idPiece.toString()));
 
         return team;
     }
@@ -72,8 +77,47 @@ export default class PiecesHelper {
         const piece = PiecesHelper.getPieceByPosition(newPos, allPieces);
         return piece !== null && piece.color !== color;
     };
+
     static isKingChecked(allPieces: Array<Piece>, color: ColorEnum): boolean {
         const king: King = allPieces.filter(piece => piece.color === color && piece instanceof King)[0] as King;
         return king.isChecked;
+    }
+
+    static canSmallCastle(king: King, allPieces: Array<Piece>): boolean {
+        let position: Position = king.position;
+        position.horizontal += 3;
+        const piece = this.getPieceByPosition(position, allPieces);
+        const roock: Roock = piece as Roock;
+        if(king.isChecked || !king.isFirstMove || piece === null || !roock.isFirstMove) {
+            return false;
+        }
+        position.horizontal -= 1;
+        if(this.getPieceByPosition(position, allPieces) === null) {
+            position.horizontal -= 1;
+            if(this.getPieceByPosition(position, allPieces) === null){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    static canLargeCastle(king: King, allPieces: Array<Piece>): boolean {
+        let position: Position = king.position;
+        position.horizontal -= 4;
+        const piece = this.getPieceByPosition(position, allPieces);
+        const roock: Roock = piece as Roock;
+        if(king.isChecked || !king.isFirstMove || piece === null || !roock.isFirstMove) {
+            return false;
+        }
+        position.horizontal += 1;
+        if(this.getPieceByPosition(position, allPieces) === null) {
+            position.horizontal += 1;
+            if(this.getPieceByPosition(position, allPieces) === null){
+                if(this.getPieceByPosition(position, allPieces) === null){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

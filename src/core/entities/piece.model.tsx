@@ -2,15 +2,17 @@ import { ColorEnum } from "../enums/color.enum";
 import Position from "../interfaces/position";
 
 export default abstract class Piece {
+    public id: string;
     public position: Position;
     public isAlive: boolean;
     public color: ColorEnum;
     abstract value: number;
 
-    constructor(position: Position, color: ColorEnum) {
+    constructor(position: Position, color: ColorEnum, id: string) {
         this.position = position;
         this.isAlive = true;
         this.color = color;
+        this.id = id;
     }
 
     public move(position: Position, piece?: Piece): void {
