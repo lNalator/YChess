@@ -1,77 +1,72 @@
+import { atom } from "jotai";
 import Bishop from "../entities/bishop.model";
 import King from "../entities/king.model";
 import Knight from "../entities/knight.model";
 import Pawn from "../entities/pawn.model";
 import Piece from "../entities/piece.model";
 import Queen from "../entities/queen.model";
-import Roock from "../entities/roock.model";
 import { ColorEnum } from "../enums/color.enum";
 import Position from "../interfaces/position";
+import Rook from "../entities/roock.model";
 
 export default class PiecesHelper {
-    static createTeam(color: ColorEnum): Array<Piece> {
-        const team: Array<Piece> = [];
-        let position: Position;
-        if(color === ColorEnum.WHITE) {
-            position = {
-                vertical: 1,
-                horizontal: 0,
-            };
-        } else {
-            position = {
-                vertical: 6,
-                horizontal: 0,
-            }
-        }
-        let idPawn: number = 1;
-        while(team.length < 8) {
-            team.push(new Pawn(position, color, color + 'Pawn' + idPawn.toString()));
-            idPawn += 1;
-            position.horizontal += 1;
-        }
+  static createTeam(color: ColorEnum): Array<any> {
+    const team: Array<any> = [];
+    const pawnRow = color === ColorEnum.WHITE ? 1 : 6;
+    const backRow = color === ColorEnum.WHITE ? 0 : 7;
 
-        position.vertical = color === ColorEnum.WHITE ? 0 : 7;
-
-        let idPiece: number = 1;
-
-        team.push(new Roock(position, color, color + 'Roock' + idPiece.toString()));
-        position.horizontal -= 1;
-        team.push(new Knight(position, color, color + 'Knight' + idPiece.toString()));
-        position.horizontal -= 1;
-        team.push(new Bishop(position, color, color + 'Bishop' + idPiece.toString()));
-        position.horizontal -= 1;
-        team.push(new King(position, color, color + 'King' + idPiece.toString()));
-        position.horizontal -=1;
-        team.push(new Queen(position, color, color + 'Queen' + idPiece.toString()));
-        position.horizontal -=1;
-        idPiece = 2;
-        team.push(new Bishop(position, color, color + 'Bishop' + idPiece.toString()));
-        position.horizontal -= 1;
-        team.push(new Knight(position, color, color + 'Knight' + idPiece.toString()));
-        position.horizontal -= 1;
-        team.push(new Roock(position, color, color + 'Roock' + idPiece.toString()));
-
-        return team;
+    // Add pawns
+    for (let i = 0; i < 8; i++) {
+      const position = { vertical: pawnRow, horizontal: i }; // New object for each pawn
+      const id = i.toString();
+      team.push(atom(new Pawn(position, color, id)));
     }
 
-    static getPieceByPosition(position: Position, allPieces: Array<Piece>): Piece | null {
-        allPieces.forEach(piece => {
-            if(piece.position === position) {
-                return piece;
-            }
-        });
-        return null;
+    // Add back row pieces
+    const backRowOrder = [
+      Rook,
+      Knight,
+      Bishop,
+      Queen,
+      King,
+      Bishop,
+      Knight,
+      Rook,
+    ];
+
+    for (let i = 0; i < backRowOrder.length; i++) {
+      const position = { vertical: backRow, horizontal: i }; // New object for each back-row piece
+      const id = 10 + i.toString();
+      team.push(atom(new backRowOrder[i](position, color, id)));
     }
 
-    static isValidPosition = (newPos: Position, allPieces: Array<Piece>): boolean => {
-        return (
-            newPos.vertical >= 0 &&
-            newPos.vertical < 8 &&
-            newPos.horizontal >= 0 &&
-            newPos.horizontal < 8 &&
-            !PiecesHelper.getPieceByPosition(newPos, allPieces)
-        );
-    };
+    return team;
+  }
+
+  static getPieceByPosition(
+    position: Position,
+    allPieces: Array<Piece>
+  ): Piece | null {
+    allPieces.forEach((piece) => {
+      if (piece.position === position) {
+        return piece;
+      }
+    });
+    return null;
+  }
+
+  static isValidPosition = (
+    newPos: Position,
+    allPieces: Array<Piece>
+  ): boolean => {
+    return (
+      newPos.vertical >= 0 &&
+      newPos.vertical < 8 &&
+      newPos.horizontal >= 0 &&
+      newPos.horizontal < 8 &&
+      !PiecesHelper.getPieceByPosition(newPos, allPieces)
+    );
+  };
 
     static isEnemyPresent = (newPos: Position, allPieces: Array<Piece>, color: ColorEnum): boolean => {
         const piece = PiecesHelper.getPieceByPosition(newPos, allPieces);

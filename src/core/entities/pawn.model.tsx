@@ -4,16 +4,16 @@ import Position from "../interfaces/position";
 import Piece from "./piece.model";
 
 export default class Pawn extends Piece {
-    value: number;
-    isFirstMove: boolean;
+  value: number;
+  isFirstMove: boolean;
     doubleJump: boolean;
 
-    constructor(position: Position, color: ColorEnum, id: string) {
-        super(position, color, id);
-        this.isFirstMove = true;
+  constructor(position: Position, color: ColorEnum, id: string) {
+    super(position, color, "Pawn", id);
+    this.isFirstMove = true;
         this.doubleJump = false;
-        this.value = 1;
-    }
+    this.value = 1;
+  }
 
     public move(position: Position, piece?: Piece): void {
         this.isFirstMove = false;
@@ -75,6 +75,6 @@ export default class Pawn extends Piece {
             }
         }
 
-        return movements;
-    }
+    return movements;
+  }
 }

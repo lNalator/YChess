@@ -9,7 +9,7 @@ export default class King extends Piece {
     isFirstMove: boolean;
 
     constructor(position: Position, color: ColorEnum, id: string) {
-        super(position, color, id);
+        super(position, color, "King", id);
         this.value = 100;
         this.isChecked = false;
         this.isFirstMove = true;
