@@ -74,7 +74,11 @@ export default function Home() {
         </div>
         <button onClick={handleTurnClicked}>Change turn</button>
       </div>
-      <Grid piecesState={gameState.pieces || [[]]} />
+      <Grid
+        piecesState={gameState.pieces || [[]]}
+        isPlayer1Playing={isPlayer1Playing}
+        setIsPlayer1Playing={setIsPlayer1Playing}
+      />
     </div>
   );
 }

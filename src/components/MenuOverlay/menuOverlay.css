@@ -1,5 +1,6 @@
 .openned {
   display: flex;
+  z-index: 100;
 }
 
 .closed {

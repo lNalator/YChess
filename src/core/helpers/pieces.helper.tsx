@@ -7,7 +7,7 @@ import Piece from "../entities/piece.model";
 import Queen from "../entities/queen.model";
 import { ColorEnum } from "../enums/color.enum";
 import Position from "../interfaces/position";
-import Rook from "../entities/roock.model";
+import Rook from "../entities/Rook.model";
 
 export default class PiecesHelper {
   static createTeam(color: ColorEnum): Array<any> {
@@ -16,11 +16,11 @@ export default class PiecesHelper {
     const backRow = color === ColorEnum.WHITE ? 0 : 7;
 
     // Add pawns
-    for (let i = 0; i < 8; i++) {
-      const position = { vertical: pawnRow, horizontal: i }; // New object for each pawn
-      const id = i.toString();
-      team.push(atom(new Pawn(position, color, id)));
-    }
+    // for (let i = 0; i < 8; i++) {
+    //   const position = { vertical: pawnRow, horizontal: i }; // New object for each pawn
+    //   const id = i.toString();
+    //   team.push(atom(new Pawn(position, color, id)));
+    // }
 
     // Add back row pieces
     const backRowOrder = [
@@ -68,51 +68,67 @@ export default class PiecesHelper {
     );
   };
 
-    static isEnemyPresent = (newPos: Position, allPieces: Array<Piece>, color: ColorEnum): boolean => {
-        const piece = PiecesHelper.getPieceByPosition(newPos, allPieces);
-        return piece !== null && piece.color !== color;
-    };
+  static isEnemyPresent = (
+    newPos: Position,
+    allPieces: Array<Piece>,
+    color: ColorEnum
+  ): boolean => {
+    const piece = PiecesHelper.getPieceByPosition(newPos, allPieces);
+    return piece !== null && piece.color !== color;
+  };
 
-    static isKingChecked(allPieces: Array<Piece>, color: ColorEnum): boolean {
-        const king: King = allPieces.filter(piece => piece.color === color && piece instanceof King)[0] as King;
-        return king.isChecked;
-    }
+  static isKingChecked(allPieces: Array<Piece>, color: ColorEnum): boolean {
+    const king: King = allPieces.filter(
+      (piece) => piece.color === color && piece instanceof King
+    )[0] as King;
+    return king.isChecked;
+  }
 
-    static canSmallCastle(king: King, allPieces: Array<Piece>): boolean {
-        let position: Position = king.position;
-        position.horizontal += 3;
-        const piece = this.getPieceByPosition(position, allPieces);
-        const roock: Roock = piece as Roock;
-        if(king.isChecked || !king.isFirstMove || piece === null || !roock.isFirstMove) {
-            return false;
-        }
-        position.horizontal -= 1;
-        if(this.getPieceByPosition(position, allPieces) === null) {
-            position.horizontal -= 1;
-            if(this.getPieceByPosition(position, allPieces) === null){
-                return true;
-            }
-        }
-        return false;
+  static canSmallCastle(king: King, allPieces: Array<Piece>): boolean {
+    let position: Position = king.position;
+    position.horizontal += 3;
+    const piece = this.getPieceByPosition(position, allPieces);
+    const Rook: Rook = piece as Rook;
+    if (
+      king.isChecked ||
+      !king.isFirstMove ||
+      piece === null ||
+      !Rook.isFirstMove
+    ) {
+      return false;
     }
+    position.horizontal -= 1;
+    if (this.getPieceByPosition(position, allPieces) === null) {
+      position.horizontal -= 1;
+      if (this.getPieceByPosition(position, allPieces) === null) {
+        return true;
+      }
+    }
+    return false;
+  }
 
-    static canLargeCastle(king: King, allPieces: Array<Piece>): boolean {
-        let position: Position = king.position;
-        position.horizontal -= 4;
-        const piece = this.getPieceByPosition(position, allPieces);
-        const roock: Roock = piece as Roock;
-        if(king.isChecked || !king.isFirstMove || piece === null || !roock.isFirstMove) {
-            return false;
-        }
-        position.horizontal += 1;
-        if(this.getPieceByPosition(position, allPieces) === null) {
-            position.horizontal += 1;
-            if(this.getPieceByPosition(position, allPieces) === null){
-                if(this.getPieceByPosition(position, allPieces) === null){
-                    return true;
-                }
-            }
-        }
-        return false;
+  static canLargeCastle(king: King, allPieces: Array<Piece>): boolean {
+    let position: Position = king.position;
+    position.horizontal -= 4;
+    const piece = this.getPieceByPosition(position, allPieces);
+    const Rook: Rook = piece as Rook;
+    if (
+      king.isChecked ||
+      !king.isFirstMove ||
+      piece === null ||
+      !Rook.isFirstMove
+    ) {
+      return false;
     }
+    position.horizontal += 1;
+    if (this.getPieceByPosition(position, allPieces) === null) {
+      position.horizontal += 1;
+      if (this.getPieceByPosition(position, allPieces) === null) {
+        if (this.getPieceByPosition(position, allPieces) === null) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
 }
