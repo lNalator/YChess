@@ -32,8 +32,8 @@ export default function Home() {
 
   function startGame(): any {
     const allPieces = [
-      PiecesHelper.createTeam(ColorEnum.WHITE),
-      PiecesHelper.createTeam(ColorEnum.BLACK),
+      ...PiecesHelper.createTeam(ColorEnum.WHITE),
+      ...PiecesHelper.createTeam(ColorEnum.BLACK),
     ];
 
     const player1 = atom(new Player("Player 1", ColorEnum.WHITE, 0));
@@ -45,7 +45,7 @@ export default function Home() {
 
   useEffect(() => {
     setGameState(startGame());
-  }, []);
+  }, [time]);
 
   return (
     <div id="main" suppressHydrationWarning={true}>

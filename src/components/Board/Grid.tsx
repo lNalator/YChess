@@ -1,29 +1,30 @@
+import PiecesHelper from "@/core/helpers/pieces.helper";
 import Box from "./Box";
 import Row from "./Row";
 import "./board.css";
-import { Atom } from "jotai";
+import { Atom, useStore } from "jotai";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import Position from "@/core/interfaces/position";
+import { ColorEnum } from "@/core/enums/color.enum";
 
 export default function Grid({
   piecesState,
   isPlayer1Playing,
   setIsPlayer1Playing,
 }: Readonly<{
-  piecesState?: Array<any>;
+  piecesState: Array<any>;
   isPlayer1Playing: any;
   setIsPlayer1Playing: any;
 }>) {
   const [selectedPiece, setSelectedPiece] = useState(null);
   const nbFiles = 8;
-  const flatPiecesState = piecesState ? piecesState.flat() : [];
 
   const handlePieceClick = (piece: any) => {
     setSelectedPiece(piece);
   };
   const possibleMoves =
-    selectedPiece?.init?.getMovements(flatPiecesState.map((p) => p?.init)) ??
-    [];
+    selectedPiece?.init?.getMovements(piecesState.map((p) => p?.init)) ?? [];
 
   const handleBoxClick = (
     isPossibleMove: any,
@@ -34,7 +35,27 @@ export default function Grid({
   ) => {
     if (isPossibleMove) {
       // Déplacez la pièce si la case est un mouvement possible
-      selectedPiece.init.move({ vertical, horizontal });
+      const afterMovement = selectedPiece.init.move(
+        { vertical, horizontal },
+        piece?.init
+      );
+      // if (piece.init?.castle) {
+      //   const castle: boolean = piece.init?.castle === "small";
+      //   const rookVertical: number =
+      //     piece.init.color === ColorEnum.WHITE ? 0 : 7;
+      //   const rookPosition: Position = castle
+      //     ? { vertical: rookVertical, horizontal: 7 }
+      //     : { vertical: rookVertical, horizontal: 0 };
+      //   const rook = PiecesHelper.getPieceByPosition(
+      //     rookPosition,
+      //     piecesState
+      //   ) as any;
+      //   const rookMove = { vertical, horizontal };
+      //   rookMove.horizontal += castle ? 1 : -1;
+
+      //   rook.init.move(rookMove);
+      // }
+      console.log(afterMovement);
       setSelectedPiece(null);
       setIsPlayer1Playing(!isPlayer1Playing);
     } else if (piece) {
@@ -52,7 +73,7 @@ export default function Grid({
                 move.vertical === vertical && move.horizontal === horizontal
             );
 
-            const piece = flatPiecesState.find(
+            const piece = piecesState.find(
               (p) =>
                 p.init?.position?.vertical === vertical &&
                 p.init?.position?.horizontal === horizontal

@@ -7,7 +7,7 @@ import Piece from "../entities/piece.model";
 import Queen from "../entities/queen.model";
 import { ColorEnum } from "../enums/color.enum";
 import Position from "../interfaces/position";
-import Rook from "../entities/Rook.model";
+import Rook from "../entities/rook.model";
 
 export default class PiecesHelper {
   static createTeam(color: ColorEnum): Array<any> {
@@ -16,11 +16,11 @@ export default class PiecesHelper {
     const backRow = color === ColorEnum.WHITE ? 0 : 7;
 
     // Add pawns
-    // for (let i = 0; i < 8; i++) {
-    //   const position = { vertical: pawnRow, horizontal: i }; // New object for each pawn
-    //   const id = i.toString();
-    //   team.push(atom(new Pawn(position, color, id)));
-    // }
+    for (let i = 0; i < 8; i++) {
+      const position = { vertical: pawnRow, horizontal: i }; // New object for each pawn
+      const id = i.toString();
+      team.push(atom(new Pawn(position, color, id)));
+    }
 
     // Add back row pieces
     const backRowOrder = [
@@ -47,12 +47,12 @@ export default class PiecesHelper {
     position: Position,
     allPieces: Array<Piece>
   ): Piece | null {
-    allPieces.forEach((piece) => {
-      if (piece.position === position) {
-        return piece;
-      }
-    });
-    return null;
+    const piece = allPieces.find(
+      (piece) =>
+        piece.position.horizontal === position.horizontal &&
+        piece.position.vertical === position.vertical
+    );
+    return piece || null;
   }
 
   static isValidPosition = (
@@ -85,8 +85,11 @@ export default class PiecesHelper {
   }
 
   static canSmallCastle(king: King, allPieces: Array<Piece>): boolean {
-    let position: Position = king.position;
-    position.horizontal += 3;
+    let position: Position;
+    position = {
+      vertical: king.position.vertical,
+      horizontal: king.position.horizontal + 3,
+    };
     const piece = this.getPieceByPosition(position, allPieces);
     const Rook: Rook = piece as Rook;
     if (
