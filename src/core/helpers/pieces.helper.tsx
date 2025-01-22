@@ -19,7 +19,7 @@ export default class PiecesHelper {
     for (let i = 0; i < 8; i++) {
       const position = { vertical: pawnRow, horizontal: i }; // New object for each pawn
       const id = i.toString();
-      team.push(atom(new Pawn(position, color, id)));
+      team.push(new Pawn(position, color, id));
     }
 
     // Add back row pieces
@@ -37,7 +37,7 @@ export default class PiecesHelper {
     for (let i = 0; i < backRowOrder.length; i++) {
       const position = { vertical: backRow, horizontal: i }; // New object for each back-row piece
       const id = 10 + i.toString();
-      team.push(atom(new backRowOrder[i](position, color, id)));
+      team.push(new backRowOrder[i](position, color, id));
     }
 
     return team;

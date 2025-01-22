@@ -2,64 +2,76 @@ import PiecesHelper from "@/core/helpers/pieces.helper";
 import Box from "./Box";
 import Row from "./Row";
 import "./board.css";
-import { Atom, useStore } from "jotai";
+import { Atom, useAtom, useStore } from "jotai";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import Position from "@/core/interfaces/position";
 import { ColorEnum } from "@/core/enums/color.enum";
+import { PrimitiveAtom } from "jotai/vanilla";
+import Piece from "@/core/entities/piece.model";
+import { gameStateAtom } from "@/core/data/gameState";
+import Player from "@/core/entities/player.model";
+
+type GameState = {
+  pieces: Array<Piece>;
+  players: Array<Player>;
+};
 
 export default function Grid({
-  piecesState,
   isPlayer1Playing,
   setIsPlayer1Playing,
 }: Readonly<{
-  piecesState: Array<any>;
   isPlayer1Playing: any;
   setIsPlayer1Playing: any;
 }>) {
-  const [selectedPiece, setSelectedPiece] = useState(null);
+  const [gameState, setGameState] = useAtom(gameStateAtom);
+  const { pieces, players }: GameState = gameState;
+  const [selectedPiece, setSelectedPiece] = useState(null as Piece | null);
   const nbFiles = 8;
+  const possibleMoves = selectedPiece?.getMovements(pieces.map((p) => p)) ?? [];
 
-  const handlePieceClick = (piece: any) => {
-    setSelectedPiece(piece);
+  const updatePiece = (pieceId: string, newProperties: any) => {
+    setGameState((prevState: any) => {
+      const updatedPieces = prevState.pieces.map((piece: Piece) =>
+        piece.id === pieceId ? { ...piece, ...newProperties } : piece
+      );
+      return { ...prevState, pieces: updatedPieces };
+    });
   };
-  const possibleMoves =
-    selectedPiece?.init?.getMovements(piecesState.map((p) => p?.init)) ?? [];
 
   const handleBoxClick = (
-    isPossibleMove: any,
-    selectedPiece: any,
+    isPossibleMove: boolean,
+    selectedPiece: Piece | null,
     piece: any,
     vertical: number,
     horizontal: number
   ) => {
-    if (isPossibleMove) {
+    if (selectedPiece && isPossibleMove) {
       // Déplacez la pièce si la case est un mouvement possible
-      const afterMovement = selectedPiece.init.move(
-        { vertical, horizontal },
-        piece?.init
-      );
-      // if (piece.init?.castle) {
-      //   const castle: boolean = piece.init?.castle === "small";
-      //   const rookVertical: number =
-      //     piece.init.color === ColorEnum.WHITE ? 0 : 7;
+      const afterMovement = selectedPiece.move({ vertical, horizontal }, piece);
+
+      //TODO : need fix castle
+
+      // if (piece.castle !== null && piece.castle !== undefined && piece.castle) {
+      //   const castle: boolean = piece.castle === "small";
+      //   const rookVertical: number = piece.color === ColorEnum.WHITE ? 0 : 7;
       //   const rookPosition: Position = castle
       //     ? { vertical: rookVertical, horizontal: 7 }
       //     : { vertical: rookVertical, horizontal: 0 };
       //   const rook = PiecesHelper.getPieceByPosition(
       //     rookPosition,
-      //     piecesState
+      //     pieces
       //   ) as any;
       //   const rookMove = { vertical, horizontal };
       //   rookMove.horizontal += castle ? 1 : -1;
 
       //   rook.init.move(rookMove);
       // }
-      console.log(afterMovement);
+
       setSelectedPiece(null);
       setIsPlayer1Playing(!isPlayer1Playing);
     } else if (piece) {
-      handlePieceClick(piece);
+      setSelectedPiece(piece);
     }
   };
 
@@ -73,10 +85,10 @@ export default function Grid({
                 move.vertical === vertical && move.horizontal === horizontal
             );
 
-            const piece = piecesState.find(
+            const piece = pieces.find(
               (p) =>
-                p.init?.position?.vertical === vertical &&
-                p.init?.position?.horizontal === horizontal
+                p.position?.vertical === vertical &&
+                p.position?.horizontal === horizontal
             );
             return (
               <Box
@@ -98,12 +110,12 @@ export default function Grid({
               >
                 {piece && (
                   <Image
-                    src={`/imgs/${
-                      Array.from(piece.init.color.toLowerCase())[0]
-                    }${Array.from(piece.init.name.toLowerCase())[0]}.png`}
+                    src={`/imgs/${Array.from(piece.color.toLowerCase())[0]}${
+                      Array.from(piece.name.toLowerCase())[0]
+                    }.png`}
                     fill={true}
                     sizes="max-width: 100px, max-height: 100px"
-                    alt={`${piece.init.color} piece`}
+                    alt={`${piece.color} piece`}
                     className="piece"
                   />
                 )}
