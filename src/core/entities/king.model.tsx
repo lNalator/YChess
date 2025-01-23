@@ -7,7 +7,7 @@ export default class King extends Piece {
   value: number;
   isChecked: boolean;
   isFirstMove: boolean;
-  castle: 'large'| 'small' | null;
+  castle: "large" | "small" | null;
 
   constructor(position: Position, color: ColorEnum, id: string) {
     super(position, color, "King", id);
@@ -21,11 +21,11 @@ export default class King extends Piece {
     let hasEaten: boolean = false;
     let ate: Piece | null = null;
     this.isFirstMove = false;
-    if(position.horizontal === this.position.horizontal + 2) {
-      this.castle = 'small';
+    if (position.horizontal === this.position.horizontal + 2) {
+      this.castle = "small";
     }
-    if(position.horizontal === this.position.horizontal - 2) {
-      this.castle = 'large';
+    if (position.horizontal === this.position.horizontal - 2) {
+      this.castle = "large";
     }
     if (piece) {
       this.eat(piece);
@@ -36,9 +36,11 @@ export default class King extends Piece {
     return { hasEaten, ate };
   }
 
-  getMovements(allPieces: Array<Piece>): Array<Position> {
+  getMovements(
+    currentPlayerPieces: Array<Piece>,
+    opponentPieces: Array<Piece>
+  ): Array<Position> {
     const movements: Array<Position> = [];
-    let newPosition: Position;
 
     const directions = [
       { dx: -1, dy: -1 },
@@ -52,29 +54,38 @@ export default class King extends Piece {
     ];
 
     for (const direction of directions) {
-      newPosition = { ...this.position };
+      let currentPosition = { ...this.position };
 
-      newPosition.horizontal += direction.dx;
-      newPosition.vertical += direction.dy;
+      currentPosition.horizontal += direction.dx;
+      currentPosition.vertical += direction.dy;
 
-      if (PiecesHelper.isValidPosition(newPosition, allPieces)) {
-        movements.push(newPosition);
+      if (
+        currentPosition.vertical >= 0 &&
+        currentPosition.vertical < 8 &&
+        currentPosition.horizontal >= 0 &&
+        currentPosition.horizontal < 8 &&
+        PiecesHelper.getPieceByPosition(currentPosition, [
+          ...currentPlayerPieces,
+          ...opponentPieces,
+        ])?.color !== this.color
+      ) {
+        movements.push(currentPosition);
       }
     }
 
-    if (PiecesHelper.canSmallCastle(this, allPieces)) {
-      console.log("canSmallCastle");
-      newPosition = { ...this.position };
-      newPosition.horizontal += 2;
-      movements.push(newPosition);
-    }
+    // if (PiecesHelper.canSmallCastle(this, allPieces)) {
+    //   console.log("canSmallCastle");
+    //   newPosition = { ...this.position };
+    //   newPosition.horizontal += 2;
+    //   movements.push(newPosition);
+    // }
 
-    if (PiecesHelper.canLargeCastle(this, allPieces)) {
-      console.log("canSmallCastle");
-      newPosition = { ...this.position };
-      newPosition.horizontal -= 2;
-      movements.push(newPosition);
-    }
+    // if (PiecesHelper.canLargeCastle(this, allPieces)) {
+    //   console.log("canSmallCastle");
+    //   newPosition = { ...this.position };
+    //   newPosition.horizontal -= 2;
+    //   movements.push(newPosition);
+    // }
 
     return movements;
   }

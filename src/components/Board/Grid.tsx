@@ -1,42 +1,33 @@
-import PiecesHelper from "@/core/helpers/pieces.helper";
 import Box from "./Box";
 import Row from "./Row";
 import "./board.css";
-import { Atom, useAtom, useStore } from "jotai";
+import { useAtom } from "jotai";
 import Image from "next/image";
-import { useEffect, useState } from "react";
-import Position from "@/core/interfaces/position";
-import { ColorEnum } from "@/core/enums/color.enum";
-import { PrimitiveAtom } from "jotai/vanilla";
+import { useState } from "react";
 import Piece from "@/core/entities/piece.model";
-import { gameStateAtom } from "@/core/data/gameState";
-import Player from "@/core/entities/player.model";
+import { gameStateAtom, GameState } from "@/core/data/gameState";
+import PlayerHelper from "@/core/helpers/player.helper";
+import Position from "@/core/interfaces/position";
 
-type GameState = {
-  pieces: Array<Piece>;
-  players: Array<Player>;
-};
-
-export default function Grid({
-  isPlayer1Playing,
-  setIsPlayer1Playing,
-}: Readonly<{
-  isPlayer1Playing: any;
-  setIsPlayer1Playing: any;
-}>) {
+export default function Grid() {
   const [gameState, setGameState] = useAtom(gameStateAtom);
-  const { pieces, players }: GameState = gameState;
+  const { players }: GameState = gameState;
+
   const [selectedPiece, setSelectedPiece] = useState(null as Piece | null);
   const nbFiles = 8;
-  const possibleMoves = selectedPiece?.getMovements(pieces.map((p) => p)) ?? [];
 
-  const updatePiece = (pieceId: string, newProperties: any) => {
-    setGameState((prevState: any) => {
-      const updatedPieces = prevState.pieces.map((piece: Piece) =>
-        piece.id === pieceId ? { ...piece, ...newProperties } : piece
+  const possibleMoves = () => {
+    let playingPlayer = PlayerHelper.getPlayingPlayer(players);
+    let opponentPlayer = PlayerHelper.getOpponentPlayer(players);
+    let possibleMoves: Array<Position> = [];
+    if (selectedPiece && selectedPiece.color === playingPlayer.color) {
+      possibleMoves = selectedPiece.getMovements(
+        playingPlayer.pieces,
+        opponentPlayer.pieces
       );
-      return { ...prevState, pieces: updatedPieces };
-    });
+    }
+
+    return possibleMoves;
   };
 
   const handleBoxClick = (
@@ -46,7 +37,11 @@ export default function Grid({
     vertical: number,
     horizontal: number
   ) => {
-    if (selectedPiece && isPossibleMove) {
+    if (
+      selectedPiece &&
+      selectedPiece.color === PlayerHelper.getPlayingPlayerColor(players) &&
+      isPossibleMove
+    ) {
       // Déplacez la pièce si la case est un mouvement possible
       const afterMovement = selectedPiece.move({ vertical, horizontal }, piece);
 
@@ -69,7 +64,8 @@ export default function Grid({
       // }
 
       setSelectedPiece(null);
-      setIsPlayer1Playing(!isPlayer1Playing);
+      PlayerHelper.switchPlayerTurn(players);
+      setGameState({ ...gameState });
     } else if (piece) {
       setSelectedPiece(piece);
     }
@@ -80,12 +76,12 @@ export default function Grid({
       {[...Array(nbFiles)].map((_, vertical) => (
         <Row key={vertical} className="row">
           {[...Array(nbFiles)].map((_, horizontal) => {
-            const isPossibleMove = possibleMoves.some(
+            const isPossibleMove = possibleMoves().some(
               (move: any) =>
                 move.vertical === vertical && move.horizontal === horizontal
             );
 
-            const piece = pieces.find(
+            const piece = PlayerHelper.getAllPieces(players).find(
               (p) =>
                 p.position?.vertical === vertical &&
                 p.position?.horizontal === horizontal

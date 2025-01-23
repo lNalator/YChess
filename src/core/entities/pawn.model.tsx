@@ -35,7 +35,10 @@ export default class Pawn extends Piece {
     return { hasEaten, ate };
   }
 
-  getMovements(allPieces: Array<Piece>): Array<Position> {
+  getMovements(
+    currentPlayerPieces: Array<Piece>,
+    opponentPieces: Array<Piece>
+  ): Array<Position> {
     const movements: Array<Position> = [];
     const horizontal: number = this.position.horizontal;
     const vertical: number = this.position.vertical;
@@ -51,14 +54,24 @@ export default class Pawn extends Piece {
       horizontal: horizontal,
       vertical: vertical + colorValue,
     };
-    if (PiecesHelper.getPieceByPosition(newPosition1, allPieces) === null) {
+    if (
+      PiecesHelper.getPieceByPosition(newPosition1, [
+        ...currentPlayerPieces,
+        ...opponentPieces,
+      ]) === null
+    ) {
       movements.push(newPosition1);
       if (this.isFirstMove) {
         const newPosition2: Position = {
           horizontal: horizontal,
           vertical: vertical + colorValue * 2,
         };
-        if (PiecesHelper.getPieceByPosition(newPosition2, allPieces) === null) {
+        if (
+          PiecesHelper.getPieceByPosition(newPosition2, [
+            ...currentPlayerPieces,
+            ...opponentPieces,
+          ]) === null
+        ) {
           movements.push(newPosition2);
         }
       }
@@ -69,9 +82,14 @@ export default class Pawn extends Piece {
       vertical: vertical + colorValue,
     };
     if (
-      PiecesHelper.getPieceByPosition(newPosition3, allPieces)?.color !==
-        this.color &&
-      PiecesHelper.getPieceByPosition(newPosition3, allPieces) !== null
+      PiecesHelper.getPieceByPosition(newPosition3, [
+        ...currentPlayerPieces,
+        ...opponentPieces,
+      ])?.color !== this.color &&
+      PiecesHelper.getPieceByPosition(newPosition3, [
+        ...currentPlayerPieces,
+        ...opponentPieces,
+      ]) !== null
     ) {
       movements.push(newPosition3);
     }
@@ -80,9 +98,14 @@ export default class Pawn extends Piece {
       vertical: vertical + colorValue,
     };
     if (
-      PiecesHelper.getPieceByPosition(newPosition4, allPieces)?.color !==
-        this.color &&
-      PiecesHelper.getPieceByPosition(newPosition4, allPieces) !== null
+      PiecesHelper.getPieceByPosition(newPosition4, [
+        ...currentPlayerPieces,
+        ...opponentPieces,
+      ])?.color !== this.color &&
+      PiecesHelper.getPieceByPosition(newPosition4, [
+        ...currentPlayerPieces,
+        ...opponentPieces,
+      ]) !== null
     ) {
       movements.push(newPosition4);
     }
@@ -92,13 +115,15 @@ export default class Pawn extends Piece {
       vertical: vertical,
     };
     if (
-      PiecesHelper.getPieceByPosition(newPosition5, allPieces)?.color !==
-      this.color
+      PiecesHelper.getPieceByPosition(newPosition5, [
+        ...currentPlayerPieces,
+        ...opponentPieces,
+      ])?.color !== this.color
     ) {
-      const enPassantPawn = PiecesHelper.getPieceByPosition(
-        newPosition5,
-        allPieces
-      ) as Pawn;
+      const enPassantPawn = PiecesHelper.getPieceByPosition(newPosition5, [
+        ...currentPlayerPieces,
+        ...opponentPieces,
+      ]) as Pawn;
       if (enPassantPawn?.doubleJump) {
         movements.push(newPosition5);
       }
@@ -108,13 +133,15 @@ export default class Pawn extends Piece {
       vertical: vertical,
     };
     if (
-      PiecesHelper.getPieceByPosition(newPosition6, allPieces)?.color !==
-      this.color
+      PiecesHelper.getPieceByPosition(newPosition6, [
+        ...currentPlayerPieces,
+        ...opponentPieces,
+      ])?.color !== this.color
     ) {
-      const enPassantPawn = PiecesHelper.getPieceByPosition(
-        newPosition6,
-        allPieces
-      ) as Pawn;
+      const enPassantPawn = PiecesHelper.getPieceByPosition(newPosition6, [
+        ...currentPlayerPieces,
+        ...opponentPieces,
+      ]) as Pawn;
       if (enPassantPawn?.doubleJump) {
         movements.push(newPosition6);
       }

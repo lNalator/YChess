@@ -39,5 +39,5 @@ export default abstract class Piece {
     piece.position = { horizontal: -1, vertical: -1 };
   }
 
-  abstract getMovements(allPieces: Array<Piece>): Array<Position>;
+  abstract getMovements(currentPlayerPieces: Array<Piece>, opponentPieces: Array<Piece>): Array<Position>;
 }

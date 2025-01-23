@@ -11,7 +11,10 @@ export default class Bishop extends Piece {
     this.value = 3;
   }
 
-  getMovements(allPieces: Array<Piece>): Array<Position> {
+  getMovements(
+    currentPlayerPieces: Array<Piece>,
+    opponentPieces: Array<Piece>
+  ): Array<Position> {
     const movements: Array<Position> = [];
 
     const directions = [
@@ -41,21 +44,22 @@ export default class Bishop extends Piece {
           break; // Stoppe si la position est hors de l'échiquier
         }
 
-        const pieceAtPosition = PiecesHelper.getPieceByPosition(
-          currentPosition,
-          allPieces
-        );
-
-        if (pieceAtPosition) {
-          // Si une pièce est rencontrée, vérifier si elle est ennemie
-          if (pieceAtPosition.color !== this.color) {
-            movements.push({ ...currentPosition }); // Capture possible
-          }
-          break; // Arrête le parcours dans cette direction après la capture ou l'obstacle
+        if (
+          PiecesHelper.getEnemyPiecesByPosition(currentPosition, opponentPieces)
+        ) {
+          movements.push({ ...currentPosition }); // Capture possible
+          break; // Arrête le parcours dans cette direction après la capture
+        } else if (
+          PiecesHelper.getFriendlyPiecesByPosition(
+            currentPosition,
+            currentPlayerPieces
+          )
+        ) {
+          break; // Arrête le parcours dans cette direction si une pièce amie est rencontrée
+        } else {
+          // Si aucune pièce n'est présente, ajouter la case aux mouvements possibles
+          movements.push({ ...currentPosition });
         }
-
-        // Si aucune pièce n'est présente, ajouter la case aux mouvements possibles
-        movements.push({ ...currentPosition });
       }
     }
 

@@ -11,7 +11,10 @@ export default class Knight extends Piece {
     this.value = 3;
   }
 
-  getMovements(allPieces: Array<Piece>): Array<Position> {
+  getMovements(
+    currentPlayerPieces: Array<Piece>,
+    opponentPieces: Array<Piece>
+  ): Array<Position> {
     const movements: Array<Position> = [];
 
     const directions = [
@@ -36,8 +39,10 @@ export default class Knight extends Piece {
         currentPosition.vertical < 8 &&
         currentPosition.horizontal >= 0 &&
         currentPosition.horizontal < 8 &&
-        PiecesHelper.getPieceByPosition(currentPosition, allPieces)?.color !==
-          this.color
+        PiecesHelper.getPieceByPosition(currentPosition, [
+          ...currentPlayerPieces,
+          ...opponentPieces,
+        ])?.color !== this.color
       ) {
         movements.push(currentPosition);
       }

@@ -10,7 +10,7 @@ import Position from "../interfaces/position";
 import Rook from "../entities/rook.model";
 
 export default class PiecesHelper {
-  static createTeam(color: ColorEnum): Array<any> {
+  static createTeam(color: ColorEnum): Array<Piece> {
     const team: Array<any> = [];
     const pawnRow = color === ColorEnum.WHITE ? 1 : 6;
     const backRow = color === ColorEnum.WHITE ? 0 : 7;
@@ -48,6 +48,28 @@ export default class PiecesHelper {
     allPieces: Array<Piece>
   ): Piece | null {
     const piece = allPieces.find(
+      (piece) =>
+        piece.position.horizontal === position.horizontal &&
+        piece.position.vertical === position.vertical
+    );
+    return piece || null;
+  }
+
+  static getEnemyPiecesByPosition(position: Position,
+    enemyPieces: Array<Piece>
+  ): Piece | null {
+    const piece = enemyPieces.find(
+      (piece) =>
+        piece.position.horizontal === position.horizontal &&
+        piece.position.vertical === position.vertical
+    );
+    return piece || null;
+  }
+
+  static getFriendlyPiecesByPosition(position: Position,
+    friendlyPieces: Array<Piece>
+  ): Piece | null {
+    const piece = friendlyPieces.find(
       (piece) =>
         piece.position.horizontal === position.horizontal &&
         piece.position.vertical === position.vertical
