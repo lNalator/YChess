@@ -12,13 +12,13 @@ import Position from "@/core/interfaces/position";
 export default function Grid() {
   const [gameState, setGameState] = useAtom(gameStateAtom);
   const { players }: GameState = gameState;
+  const playingPlayer = PlayerHelper.getPlayingPlayer(players);
+  const opponentPlayer = PlayerHelper.getOpponentPlayer(players);
 
   const [selectedPiece, setSelectedPiece] = useState(null as Piece | null);
   const nbFiles = 8;
 
   const possibleMoves = () => {
-    let playingPlayer = PlayerHelper.getPlayingPlayer(players);
-    let opponentPlayer = PlayerHelper.getOpponentPlayer(players);
     let possibleMoves: Array<Position> = [];
     if (selectedPiece && selectedPiece.color === playingPlayer.color) {
       possibleMoves = selectedPiece.getMovements(
@@ -44,7 +44,9 @@ export default function Grid() {
     ) {
       // Déplacez la pièce si la case est un mouvement possible
       const afterMovement = selectedPiece.move({ vertical, horizontal }, piece);
-
+      if (afterMovement.hasEaten && afterMovement.ate) {
+        PlayerHelper.eatPiece(playingPlayer, opponentPlayer, afterMovement.ate);
+      }
       //TODO : need fix castle
 
       // if (piece.castle !== null && piece.castle !== undefined && piece.castle) {
@@ -66,8 +68,11 @@ export default function Grid() {
       setSelectedPiece(null);
       PlayerHelper.switchPlayerTurn(players);
       setGameState({ ...gameState });
+      console.log(gameState);
     } else if (piece) {
       setSelectedPiece(piece);
+    } else {
+      setSelectedPiece(null);
     }
   };
 
@@ -90,9 +95,7 @@ export default function Grid() {
               <Box
                 key={vertical * 10 + horizontal}
                 className={
-                  ((vertical + horizontal) % 2 ? "light" : "dark") +
-                  " box" +
-                  (isPossibleMove ? " possible-move" : "")
+                  ((vertical + horizontal) % 2 ? "light" : "dark") + " box"
                 }
                 onClick={() =>
                   handleBoxClick(
@@ -104,6 +107,12 @@ export default function Grid() {
                   )
                 }
               >
+                <div
+                  className={
+                    (isPossibleMove ? "possible-move " : "") +
+                    (piece ? "piece-exist" : "")
+                  }
+                ></div>
                 {piece && (
                   <Image
                     src={`/imgs/${Array.from(piece.color.toLowerCase())[0]}${
@@ -111,7 +120,7 @@ export default function Grid() {
                     }.png`}
                     fill={true}
                     sizes="max-width: 100px, max-height: 100px"
-                    alt={`${piece.color} piece`}
+                    alt={piece.color + " " + piece.name}
                     className="piece"
                   />
                 )}

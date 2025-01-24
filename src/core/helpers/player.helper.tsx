@@ -48,4 +48,16 @@ export default class PlayerHelper {
       player.time = time;
     });
   }
+
+  static eatPiece(
+    playingPlayer: Player,
+    opponentPlayer: Player,
+    piece: Piece
+  ): void {
+    playingPlayer.eatenPieces.push(piece);
+    opponentPlayer.pieces = opponentPlayer.pieces.filter(
+      (p) => p.id !== piece.id
+    );
+    playingPlayer.getScore();
+  }
 }

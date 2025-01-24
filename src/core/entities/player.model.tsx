@@ -9,19 +9,19 @@ export default class Player {
   isPlaying: boolean;
   time: number;
   pieces: Array<Piece>;
+  eatenPieces: Array<Piece>;
 
-  constructor(
-    name: string,
-    color: string,
-    score: number,
-    isPlaying: boolean,
-    time: number
-  ) {
+  constructor(name: string, color: string, isPlaying: boolean, time: number) {
     this.name = name;
     this.color = color;
-    this.score = score;
     this.isPlaying = isPlaying;
     this.time = time;
     this.pieces = PiecesHelper.createTeam(color as ColorEnum);
+    this.eatenPieces = [];
+    this.score = 0;
+  }
+
+  getScore() {
+    this.score = this.eatenPieces.reduce((acc, piece) => acc + piece.value, 0);
   }
 }

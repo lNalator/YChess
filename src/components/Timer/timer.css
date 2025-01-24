@@ -1,14 +1,43 @@
 .timer {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-direction: row;
+  justify-content: space-between;
+  flex: 1 1;
+  width: 100%;
   font-size: 2rem;
   color: #efefef;
+  align-items: center;
 }
 
-.minute {
+.timer-player-name {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.time {
+  align-self: flex-end;
   margin-right: 0.5rem;
 }
-.second {
-  margin-left: 0.5rem;
+
+.player1 .time {
+  align-self: flex-start;
+}
+
+.timer-player-eaten-pieces {
+  width: 100%;
+  min-height: 45px;
+}
+
+.eaten-piece-group {
+  width: fit-content;
+  display: inline;
+}
+
+.eatenPiece {
+  position: relative;
+  margin-left: -22.5px;
+}
+
+.eatenPiece:first-child {
+  margin-left: -10px;
 }

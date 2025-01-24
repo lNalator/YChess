@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import Player from "@/core/entities/player.model";
 import "./timer.css";
+import Image from "next/image";
 
 export default function Timer({
   player,
@@ -10,7 +11,7 @@ export default function Timer({
   className?: string;
 }>) {
   const [time, setTime] = useState(player.time); // Local state to track time
-  
+
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const getTime = (timing: number) => {
@@ -41,13 +42,46 @@ export default function Timer({
   const minutes = Math.floor((time / 60) % 60);
   const seconds = Math.floor(time % 60);
 
+  // Group eaten pieces by type
+  const groupedEatenPieces = player.eatenPieces.reduce((acc, piece) => {
+    const key = piece.color + piece.name;
+    acc[key] = acc[key] || [];
+    acc[key].push(piece);
+    return acc;
+  }, {} as Record<string, typeof player.eatenPieces>);
+
+  const sortedGroupedEatenPieces = Object.values(groupedEatenPieces).sort(
+    (a, b) => a[0].value - b[0].value
+  );
+
   return (
     <div className={"timer " + className}>
-      <div className="minute">
-        <p>{minutes < 10 ? `0${minutes}` : minutes}</p>
+      <div className="timer-rightSide">
+        <h1 className="timer-player-name">{player.name}</h1>
+        <div className="timer-player-eaten-pieces">
+          {sortedGroupedEatenPieces.map((pieces, index) => (
+            <div key={index} className="eaten-piece-group">
+              {pieces.map((piece, i) => (
+                <Image
+                  key={i}
+                  width={35}
+                  height={35}
+                  src={`/imgs/${Array.from(piece.color.toLowerCase())[0]}${
+                    Array.from(piece.name.toLowerCase())[0]
+                  }.png`}
+                  alt={piece.color + " " + piece.name}
+                  className="eatenPiece"
+                />
+              ))}
+            </div>
+          ))}
+        </div>
       </div>
-      <div className="second">
-        <p>{seconds < 10 ? `0${seconds}` : seconds}</p>
+      <div className="time">
+        <p>
+          {minutes < 10 ? `0${minutes} ` : minutes + " "}:
+          {seconds < 10 ? ` 0${seconds}` : " " + seconds}
+        </p>
       </div>
     </div>
   );

@@ -32,14 +32,13 @@ export default function Home() {
         }}
         open={isMenuOpen}
       ></MenuOverlay>
-
-      <div className="timerContainers">
-        <div className="timers">
-          <Timer player={players[0]} className="player1" />
-          <Timer player={players[1]} className="player2" />
-        </div>
+      <div className="timerContainer">
+        <Timer player={players[1]} className="player2" />
       </div>
       <Grid />
+      <div className="timerContainer">
+        <Timer player={players[0]} className="player1" />
+      </div>
     </div>
   );
 }
