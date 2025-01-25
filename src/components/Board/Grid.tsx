@@ -46,12 +46,13 @@ export default function Grid() {
       selectedPiece.color === PlayerHelper.getPlayingPlayerColor(players) &&
       isPossibleMove
     ) {
-      // Déplacez la pièce si la case est un mouvement possible
+      // Déplacer la pièce si la case est un mouvement possible
       const afterMovement = selectedPiece.move({ vertical, horizontal }, piece);
       if (afterMovement.hasEaten && afterMovement.ate) {
         PlayerHelper.eatPiece(playingPlayer, opponentPlayer, afterMovement.ate);
       }
       
+      // Déplacer aussi la tour si il y a roque
       if(afterMovement?.castle === CastleEnum.SMALL){
         const rookPosition = selectedPiece.color === ColorEnum.WHITE ? { vertical: 0, horizontal: 7 } : { vertical: 7, horizontal: 7 };
         const rookNextPosition = selectedPiece.color === ColorEnum.WHITE ? { vertical: 0, horizontal: 5 } : { vertical: 7, horizontal: 5 };
@@ -64,11 +65,19 @@ export default function Grid() {
         const rook = PiecesHelper.getFriendlyPiecesByPosition(rookPosition, playingPlayer.pieces) as Rook;
         rook.move(rookNextPosition);
       }
+
+      if(afterMovement?.enPassant) {
+        const ennemyPawnPosition: Position = selectedPiece.color === ColorEnum.WHITE 
+        ? { vertical: selectedPiece.position.vertical - 1, horizontal: selectedPiece.position.horizontal } 
+        : { vertical: selectedPiece.position.vertical + 1, horizontal: selectedPiece.position.horizontal };
+        const ennemyPawn = PiecesHelper.getEnemyPiecesByPosition(ennemyPawnPosition, opponentPlayer.pieces) as Piece;
+        selectedPiece.eat(ennemyPawn);
+        PlayerHelper.eatPiece(playingPlayer, opponentPlayer, ennemyPawn);
+      }
       
       setSelectedPiece(null);
       PlayerHelper.switchPlayerTurn(players);
       setGameState({ ...gameState });
-      console.log(gameState);
     } else if (piece) {
       setSelectedPiece(piece);
     } else {

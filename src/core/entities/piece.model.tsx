@@ -6,6 +6,7 @@ export interface afterMovement {
   hasEaten: boolean;
   ate: Piece | null;
   castle?: CastleEnum | null;
+  enPassant?: boolean;
 }
 
 export default abstract class Piece {

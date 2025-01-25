@@ -1,5 +1,6 @@
 import Piece from "../entities/piece.model";
 import Player from "../entities/player.model";
+import PiecesHelper from "./pieces.helper";
 
 export default class PlayerHelper {
   static getOpponentColor(color: string): string {
@@ -40,6 +41,9 @@ export default class PlayerHelper {
   static switchPlayerTurn(players: Array<Player>): void {
     players.forEach((player) => {
       player.isPlaying = !player.isPlaying;
+      if(player.isPlaying){
+        PiecesHelper.resetDoubleJump(player.pieces);
+      }
     });
   }
 

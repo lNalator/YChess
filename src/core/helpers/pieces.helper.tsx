@@ -77,28 +77,6 @@ export default class PiecesHelper {
     return piece || null;
   }
 
-  static isValidPosition = (
-    newPos: Position,
-    allPieces: Array<Piece>
-  ): boolean => {
-    return (
-      newPos.vertical >= 0 &&
-      newPos.vertical < 8 &&
-      newPos.horizontal >= 0 &&
-      newPos.horizontal < 8 &&
-      !PiecesHelper.getPieceByPosition(newPos, allPieces)
-    );
-  };
-
-  static isEnemyPresent = (
-    newPos: Position,
-    allPieces: Array<Piece>,
-    color: ColorEnum
-  ): boolean => {
-    const piece = PiecesHelper.getPieceByPosition(newPos, allPieces);
-    return piece !== null && piece.color !== color;
-  };
-
   static isKingChecked(allPieces: Array<Piece>, color: ColorEnum): boolean {
     const king: King = allPieces.filter(
       (piece) => piece.color === color && piece instanceof King
@@ -163,5 +141,14 @@ export default class PiecesHelper {
       }
     }
     return false;
+  }
+
+  static resetDoubleJump(pieces: Array<Piece>): void {
+    pieces.forEach(piece =>{
+      const pawn = piece as Pawn;
+      if(pawn.doubleJump){
+        pawn.doubleJump = false;
+      }
+    })
   }
 }
