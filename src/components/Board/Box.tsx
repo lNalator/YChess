@@ -1,9 +1,15 @@
-export default function Box({
-  children,
-  className,
-}: Readonly<{
-  children: React.ReactNode;
+import { ReactNode } from "react";
+
+interface BoxProps {
+  children?: ReactNode;
   className?: string;
-}>) {
-  return <div className={className}>{children}</div>;
+  onClick?: () => void;
+}
+
+export default function Box({ children, className, onClick }: Readonly<BoxProps>) {
+  return (
+    <div className={className} onClick={onClick}>
+      {children}
+    </div>
+  );
 }

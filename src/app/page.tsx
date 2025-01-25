@@ -1,51 +1,25 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Timer from "@/components/Timer/Timer";
 import Grid from "@/components/Board/Grid";
 import MenuOverlay from "@/components/MenuOverlay/MenuOverlay";
-import PiecesHelper from "@/core/helpers/pieces.helper";
-import { ColorEnum } from "@/core/enums/color.enum";
-import Piece from "@/core/entities/piece.model";
+import PlayerHelper from "@/core/helpers/player.helper";
 import "./page.css";
-import { atom } from "jotai";
-import Player from "@/core/entities/player.model";
-
-interface GameState {
-  pieces: Array<Piece>;
-  players: Array<Player>;
-}
+import { useAtom } from "jotai";
+import { GameState, gameStateAtom } from "@/core/data/gameState";
 
 export default function Home() {
-  const [gameState, setGameState] = useState({} as GameState);
-  const [time, setTime] = useState(0);
+  const [gameState, setGameState] = useAtom(gameStateAtom);
+  const { players }: GameState = gameState;
   const [isMenuOpen, setIsMenuOpen] = useState(true);
-  const [isPlayer1Playing, setIsPlayer1Playing] = useState(true);
 
   function handleMenuClicked(e?: any) {
-    if (e) setTime(e);
+    if (e) {
+      PlayerHelper.setPlayerTime(players, e);
+      setGameState({ ...gameState });
+    }
     setIsMenuOpen(!isMenuOpen);
   }
-
-  function handleTurnClicked() {
-    setIsPlayer1Playing(!isPlayer1Playing);
-  }
-
-  function startGame(): any {
-    const allPieces = [
-      PiecesHelper.createTeam(ColorEnum.WHITE),
-      PiecesHelper.createTeam(ColorEnum.BLACK),
-    ];
-
-    const player1 = atom(new Player("Player 1", ColorEnum.WHITE, 0));
-    const player2 = atom(new Player("Player 2", ColorEnum.BLACK, 0));
-
-    console.log({ pieces: allPieces, players: [player1, player2] });
-    return { pieces: allPieces, players: [player1, player2] };
-  }
-
-  useEffect(() => {
-    setGameState(startGame());
-  }, []);
 
   return (
     <div id="main" suppressHydrationWarning={true}>
@@ -58,23 +32,13 @@ export default function Home() {
         }}
         open={isMenuOpen}
       ></MenuOverlay>
-
-      <div className="timerContainers">
-        <div className="timers">
-          <Timer
-            chosenTime={time}
-            isPlaying={isPlayer1Playing}
-            className="player1"
-          />
-          <Timer
-            chosenTime={time}
-            isPlaying={!isPlayer1Playing}
-            className="player2"
-          />
-        </div>
-        <button onClick={handleTurnClicked}>Change turn</button>
+      <div className="timerContainer">
+        <Timer player={players[1]} className="player2" />
       </div>
-      <Grid piecesState={gameState.pieces || [[]]} />
+      <Grid />
+      <div className="timerContainer">
+        <Timer player={players[0]} className="player1" />
+      </div>
     </div>
   );
 }

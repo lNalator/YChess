@@ -11,44 +11,56 @@ export default class Bishop extends Piece {
     this.value = 3;
   }
 
-  getMovements(allPieces: Array<Piece>): Array<Position> {
+  getMovements(
+    currentPlayerPieces: Array<Piece>,
+    opponentPieces: Array<Piece>
+  ): Array<Position> {
     const movements: Array<Position> = [];
-    let newPosition: Position = { ...this.position };
 
     const directions = [
-      { dx: 1, dy: 1 },
-      { dx: 1, dy: -1 },
-      { dx: -1, dy: 1 },
-      { dx: -1, dy: -1 },
+      { dx: 1, dy: 1 }, // Diagonale haut-droite
+      { dx: 1, dy: -1 }, // Diagonale bas-droite
+      { dx: -1, dy: 1 }, // Diagonale haut-gauche
+      { dx: -1, dy: -1 }, // Diagonale bas-gauche
     ];
 
-    // Vérifier les mouvements diagonaux
     for (const direction of directions) {
-      newPosition = { ...this.position };
+      let currentPosition = { ...this.position };
 
-      do {
-        newPosition.horizontal += direction.dx;
-        newPosition.vertical += direction.dy;
+      while (true) {
+        // Mise à jour de la position actuelle dans la direction donnée
+        currentPosition = {
+          horizontal: currentPosition.horizontal + direction.dx,
+          vertical: currentPosition.vertical + direction.dy,
+        };
 
-        // Vérifier si la position est valide et peut être capturée
-        if (PiecesHelper.isValidPosition(newPosition, allPieces)) {
-          movements.push(newPosition);
-
-          // Si c'est une capture ennemie, vérifier s'il y a d'autres pièces ennemies à distance
-          if (PiecesHelper.isEnemyPresent(newPosition, allPieces, this.color)) {
-            let nextPosition = { ...newPosition };
-
-            nextPosition.horizontal += direction.dx;
-            nextPosition.vertical += direction.dy;
-
-            if (PiecesHelper.isValidPosition(nextPosition, allPieces)) {
-              movements.push(nextPosition);
-            }
-          }
-        } else {
-          break;
+        // Vérifie si la position est hors des limites de l'échiquier
+        if (
+          currentPosition.horizontal < 0 ||
+          currentPosition.horizontal >= 8 ||
+          currentPosition.vertical < 0 ||
+          currentPosition.vertical >= 8
+        ) {
+          break; // Stoppe si la position est hors de l'échiquier
         }
-      } while (true);
+
+        if (
+          PiecesHelper.getEnemyPiecesByPosition(currentPosition, opponentPieces)
+        ) {
+          movements.push({ ...currentPosition }); // Capture possible
+          break; // Arrête le parcours dans cette direction après la capture
+        } else if (
+          PiecesHelper.getFriendlyPiecesByPosition(
+            currentPosition,
+            currentPlayerPieces
+          )
+        ) {
+          break; // Arrête le parcours dans cette direction si une pièce amie est rencontrée
+        } else {
+          // Si aucune pièce n'est présente, ajouter la case aux mouvements possibles
+          movements.push({ ...currentPosition });
+        }
+      }
     }
 
     return movements;

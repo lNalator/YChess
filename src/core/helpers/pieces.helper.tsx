@@ -7,10 +7,10 @@ import Piece from "../entities/piece.model";
 import Queen from "../entities/queen.model";
 import { ColorEnum } from "../enums/color.enum";
 import Position from "../interfaces/position";
-import Rook from "../entities/roock.model";
+import Rook from "../entities/rook.model";
 
 export default class PiecesHelper {
-  static createTeam(color: ColorEnum): Array<any> {
+  static createTeam(color: ColorEnum): Array<Piece> {
     const team: Array<any> = [];
     const pawnRow = color === ColorEnum.WHITE ? 1 : 6;
     const backRow = color === ColorEnum.WHITE ? 0 : 7;
@@ -19,7 +19,7 @@ export default class PiecesHelper {
     for (let i = 0; i < 8; i++) {
       const position = { vertical: pawnRow, horizontal: i }; // New object for each pawn
       const id = i.toString();
-      team.push(atom(new Pawn(position, color, id)));
+      team.push(new Pawn(position, color, id));
     }
 
     // Add back row pieces
@@ -37,7 +37,7 @@ export default class PiecesHelper {
     for (let i = 0; i < backRowOrder.length; i++) {
       const position = { vertical: backRow, horizontal: i }; // New object for each back-row piece
       const id = 10 + i.toString();
-      team.push(atom(new backRowOrder[i](position, color, id)));
+      team.push(new backRowOrder[i](position, color, id));
     }
 
     return team;
@@ -45,14 +45,36 @@ export default class PiecesHelper {
 
   static getPieceByPosition(
     position: Position,
-    allPieces: Array<Piece>
+    pieces: Array<Piece>
   ): Piece | null {
-    allPieces.forEach((piece) => {
-      if (piece.position === position) {
-        return piece;
-      }
-    });
-    return null;
+    const piece = pieces.find(
+      (piece) =>
+        piece.position.horizontal === position.horizontal &&
+        piece.position.vertical === position.vertical
+    );
+    return piece || null;
+  }
+
+  static getEnemyPiecesByPosition(position: Position,
+    enemyPieces: Array<Piece>
+  ): Piece | null {
+    const piece = enemyPieces.find(
+      (piece) =>
+        piece.position.horizontal === position.horizontal &&
+        piece.position.vertical === position.vertical
+    );
+    return piece || null;
+  }
+
+  static getFriendlyPiecesByPosition(position: Position,
+    friendlyPieces: Array<Piece>
+  ): Piece | null {
+    const piece = friendlyPieces.find(
+      (piece) =>
+        piece.position.horizontal === position.horizontal &&
+        piece.position.vertical === position.vertical
+    );
+    return piece || null;
   }
 
   static isValidPosition = (
@@ -68,51 +90,78 @@ export default class PiecesHelper {
     );
   };
 
-    static isEnemyPresent = (newPos: Position, allPieces: Array<Piece>, color: ColorEnum): boolean => {
-        const piece = PiecesHelper.getPieceByPosition(newPos, allPieces);
-        return piece !== null && piece.color !== color;
+  static isEnemyPresent = (
+    newPos: Position,
+    allPieces: Array<Piece>,
+    color: ColorEnum
+  ): boolean => {
+    const piece = PiecesHelper.getPieceByPosition(newPos, allPieces);
+    return piece !== null && piece.color !== color;
+  };
+
+  static isKingChecked(allPieces: Array<Piece>, color: ColorEnum): boolean {
+    const king: King = allPieces.filter(
+      (piece) => piece.color === color && piece instanceof King
+    )[0] as King;
+    return king.isChecked;
+  }
+
+  static canSmallCastle(king: King, currentPlayerPieces: Array<Piece>): boolean {
+    let position: Position;
+    position = {
+      vertical: king.position.vertical,
+      horizontal: king.position.horizontal + 3,
     };
-
-    static isKingChecked(allPieces: Array<Piece>, color: ColorEnum): boolean {
-        const king: King = allPieces.filter(piece => piece.color === color && piece instanceof King)[0] as King;
-        return king.isChecked;
+    const piece = this.getPieceByPosition(position, currentPlayerPieces);
+    if(!piece){
+      return false;
     }
-
-    static canSmallCastle(king: King, allPieces: Array<Piece>): boolean {
-        let position: Position = king.position;
-        position.horizontal += 3;
-        const piece = this.getPieceByPosition(position, allPieces);
-        const roock: Roock = piece as Roock;
-        if(king.isChecked || !king.isFirstMove || piece === null || !roock.isFirstMove) {
-            return false;
-        }
-        position.horizontal -= 1;
-        if(this.getPieceByPosition(position, allPieces) === null) {
-            position.horizontal -= 1;
-            if(this.getPieceByPosition(position, allPieces) === null){
-                return true;
-            }
-        }
-        return false;
+    const rook: Rook = piece as Rook;
+    if (
+      king.isChecked ||
+      !king.isFirstMove ||
+      !rook.isFirstMove
+    ) {
+      return false;
     }
+    position.horizontal -= 1;
+    if (this.getPieceByPosition(position, currentPlayerPieces) === null) {
+      position.horizontal -= 1;
+      if (this.getPieceByPosition(position, currentPlayerPieces) === null) {
+        return true;
+      }
+    }
+    return false;
+  }
 
-    static canLargeCastle(king: King, allPieces: Array<Piece>): boolean {
-        let position: Position = king.position;
-        position.horizontal -= 4;
-        const piece = this.getPieceByPosition(position, allPieces);
-        const roock: Roock = piece as Roock;
-        if(king.isChecked || !king.isFirstMove || piece === null || !roock.isFirstMove) {
-            return false;
-        }
+  static canLargeCastle(king: King, currentPlayerPieces: Array<Piece>): boolean {
+    let position: Position;
+    position = {
+      vertical: king.position.vertical,
+      horizontal: king.position.horizontal - 4,
+    };
+    const piece = this.getPieceByPosition(position, currentPlayerPieces);
+    if(!piece){
+      return false;
+    }
+    const rook: Rook = piece as Rook;
+    if (
+      king.isChecked ||
+      !king.isFirstMove ||
+      !rook.isFirstMove
+    ) {
+      return false;
+    }
+    position.horizontal += 1;
+    if (this.getPieceByPosition(position, currentPlayerPieces) === null) {
+      position.horizontal += 1;
+      if (this.getPieceByPosition(position, currentPlayerPieces) === null) {
         position.horizontal += 1;
-        if(this.getPieceByPosition(position, allPieces) === null) {
-            position.horizontal += 1;
-            if(this.getPieceByPosition(position, allPieces) === null){
-                if(this.getPieceByPosition(position, allPieces) === null){
-                    return true;
-                }
-            }
+        if (this.getPieceByPosition(position, currentPlayerPieces) === null) {
+          return true;
         }
-        return false;
+      }
     }
+    return false;
+  }
 }

@@ -1,43 +1,27 @@
+import { ColorEnum } from "../enums/color.enum";
+import PiecesHelper from "../helpers/pieces.helper";
+import Piece from "./piece.model";
+
 export default class Player {
   name: string;
   color: string;
   score: number;
+  isPlaying: boolean;
+  time: number;
+  pieces: Array<Piece>;
+  eatenPieces: Array<Piece>;
 
-  constructor(name: string, color: string, score: number) {
+  constructor(name: string, color: string, isPlaying: boolean, time: number) {
     this.name = name;
     this.color = color;
-    this.score = score;
-  }
-
-  public addScore(score: number): void {
-    this.score += score;
-  }
-
-  public removeScore(score: number): void {
-    this.score -= score;
-  }
-
-  public resetScore(): void {
+    this.isPlaying = isPlaying;
+    this.time = time;
+    this.pieces = PiecesHelper.createTeam(color as ColorEnum);
+    this.eatenPieces = [];
     this.score = 0;
   }
 
-  public setColor(color: string): void {
-    this.color = color;
-  }
-
-  public setName(name: string): void {
-    this.name = name;
-  }
-
-  public getScore(): number {
-    return this.score;
-  }
-
-  public getName(): string {
-    return this.name;
-  }
-
-  public getColor(): string {
-    return this.color;
+  getScore() {
+    this.score = this.eatenPieces.reduce((acc, piece) => acc + piece.value, 0);
   }
 }

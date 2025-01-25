@@ -1,30 +1,19 @@
 #main {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-evenly;
   flex-direction: column;
   height: 100%;
 }
 
-.timerContainers {
+.timerContainer {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  margin: 1rem;
-}
-
-.timerContainers button {
-  width: fit-content;
-}
-
-.timers {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-evenly;
-  align-items: center;
-  width: 100%;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding: 0.5rem 0;
+  width: 70vh;
+  min-height: 160px;
 }
 
 .menu-button {
