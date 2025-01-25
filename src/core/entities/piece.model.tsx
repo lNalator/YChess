@@ -1,9 +1,11 @@
+import { CastleEnum } from "../enums/castle.enum";
 import { ColorEnum } from "../enums/color.enum";
 import Position from "../interfaces/position";
 
 export interface afterMovement {
   hasEaten: boolean;
   ate: Piece | null;
+  castle?: CastleEnum | null;
 }
 
 export default abstract class Piece {

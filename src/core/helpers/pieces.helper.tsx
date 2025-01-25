@@ -45,9 +45,9 @@ export default class PiecesHelper {
 
   static getPieceByPosition(
     position: Position,
-    allPieces: Array<Piece>
+    pieces: Array<Piece>
   ): Piece | null {
-    const piece = allPieces.find(
+    const piece = pieces.find(
       (piece) =>
         piece.position.horizontal === position.horizontal &&
         piece.position.vertical === position.vertical
@@ -106,50 +106,55 @@ export default class PiecesHelper {
     return king.isChecked;
   }
 
-  static canSmallCastle(king: King, allPieces: Array<Piece>): boolean {
+  static canSmallCastle(king: King, currentPlayerPieces: Array<Piece>): boolean {
     let position: Position;
     position = {
       vertical: king.position.vertical,
       horizontal: king.position.horizontal + 3,
     };
-    const piece = this.getPieceByPosition(position, allPieces);
-    const Rook: Rook = piece as Rook;
+    const piece = this.getPieceByPosition(position, currentPlayerPieces);
+    if(!piece){
+      return false;
+    }
+    const rook: Rook = piece as Rook;
     if (
       king.isChecked ||
       !king.isFirstMove ||
-      piece === null ||
-      !Rook.isFirstMove
+      !rook.isFirstMove
     ) {
       return false;
     }
     position.horizontal -= 1;
-    if (this.getPieceByPosition(position, allPieces) === null) {
+    if (this.getPieceByPosition(position, currentPlayerPieces) === null) {
       position.horizontal -= 1;
-      if (this.getPieceByPosition(position, allPieces) === null) {
+      if (this.getPieceByPosition(position, currentPlayerPieces) === null) {
         return true;
       }
     }
     return false;
   }
 
-  static canLargeCastle(king: King, allPieces: Array<Piece>): boolean {
+  static canLargeCastle(king: King, currentPlayerPieces: Array<Piece>): boolean {
     let position: Position = king.position;
     position.horizontal -= 4;
-    const piece = this.getPieceByPosition(position, allPieces);
-    const Rook: Rook = piece as Rook;
+    const piece = this.getPieceByPosition(position, currentPlayerPieces);
+    if(!piece){
+      return false;
+    }
+    const rook: Rook = piece as Rook;
     if (
       king.isChecked ||
       !king.isFirstMove ||
-      piece === null ||
-      !Rook.isFirstMove
+      !rook.isFirstMove
     ) {
       return false;
     }
     position.horizontal += 1;
-    if (this.getPieceByPosition(position, allPieces) === null) {
+    if (this.getPieceByPosition(position, currentPlayerPieces) === null) {
       position.horizontal += 1;
-      if (this.getPieceByPosition(position, allPieces) === null) {
-        if (this.getPieceByPosition(position, allPieces) === null) {
+      if (this.getPieceByPosition(position, currentPlayerPieces) === null) {
+        position.horizontal += 1;
+        if (this.getPieceByPosition(position, currentPlayerPieces) === null) {
           return true;
         }
       }

@@ -8,6 +8,10 @@ import Piece from "@/core/entities/piece.model";
 import { gameStateAtom, GameState } from "@/core/data/gameState";
 import PlayerHelper from "@/core/helpers/player.helper";
 import Position from "@/core/interfaces/position";
+import { CastleEnum } from "@/core/enums/castle.enum";
+import PiecesHelper from "@/core/helpers/pieces.helper";
+import { ColorEnum } from "@/core/enums/color.enum";
+import Rook from "@/core/entities/rook.model";
 
 export default function Grid() {
   const [gameState, setGameState] = useAtom(gameStateAtom);
@@ -47,24 +51,20 @@ export default function Grid() {
       if (afterMovement.hasEaten && afterMovement.ate) {
         PlayerHelper.eatPiece(playingPlayer, opponentPlayer, afterMovement.ate);
       }
-      //TODO : need fix castle
-
-      // if (piece.castle !== null && piece.castle !== undefined && piece.castle) {
-      //   const castle: boolean = piece.castle === "small";
-      //   const rookVertical: number = piece.color === ColorEnum.WHITE ? 0 : 7;
-      //   const rookPosition: Position = castle
-      //     ? { vertical: rookVertical, horizontal: 7 }
-      //     : { vertical: rookVertical, horizontal: 0 };
-      //   const rook = PiecesHelper.getPieceByPosition(
-      //     rookPosition,
-      //     pieces
-      //   ) as any;
-      //   const rookMove = { vertical, horizontal };
-      //   rookMove.horizontal += castle ? 1 : -1;
-
-      //   rook.init.move(rookMove);
-      // }
-
+      
+      if(afterMovement?.castle === CastleEnum.SMALL){
+        const rookPosition = selectedPiece.color === ColorEnum.WHITE ? { vertical: 0, horizontal: 7 } : { vertical: 7, horizontal: 7 };
+        const rookNextPosition = selectedPiece.color === ColorEnum.WHITE ? { vertical: 0, horizontal: 5 } : { vertical: 7, horizontal: 5 };
+        const rook = PiecesHelper.getFriendlyPiecesByPosition(rookPosition, playingPlayer.pieces) as Rook;
+        rook.move(rookNextPosition);
+      }
+      else if(afterMovement?.castle === CastleEnum.LARGE) {
+        const rookPosition = selectedPiece.color === ColorEnum.WHITE ? { vertical: 0, horizontal: 0 } : { vertical: 7, horizontal: 0 };
+        const rookNextPosition = selectedPiece.color === ColorEnum.WHITE ? { vertical: 0, horizontal: 3 } : { vertical: 7, horizontal: 3 };
+        const rook = PiecesHelper.getFriendlyPiecesByPosition(rookPosition, playingPlayer.pieces) as Rook;
+        rook.move(rookNextPosition);
+      }
+      
       setSelectedPiece(null);
       PlayerHelper.switchPlayerTurn(players);
       setGameState({ ...gameState });
