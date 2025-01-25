@@ -74,18 +74,16 @@ export default class King extends Piece {
     }
 
     if (PiecesHelper.canSmallCastle(this, currentPlayerPieces)) {
-      console.log("canSmallCastle");
       const newPosition = { ...this.position };
       newPosition.horizontal += 2;
       movements.push(newPosition);
     }
 
-    // if (PiecesHelper.canLargeCastle(this, allPieces)) {
-    //   console.log("canSmallCastle");
-    //   newPosition = { ...this.position };
-    //   newPosition.horizontal -= 2;
-    //   movements.push(newPosition);
-    // }
+    if (PiecesHelper.canLargeCastle(this, currentPlayerPieces)) {
+      const newPosition = { ...this.position };
+      newPosition.horizontal -= 2;
+      movements.push(newPosition);
+      }
 
     return movements;
   }

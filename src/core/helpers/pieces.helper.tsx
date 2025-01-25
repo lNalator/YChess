@@ -135,8 +135,11 @@ export default class PiecesHelper {
   }
 
   static canLargeCastle(king: King, currentPlayerPieces: Array<Piece>): boolean {
-    let position: Position = king.position;
-    position.horizontal -= 4;
+    let position: Position;
+    position = {
+      vertical: king.position.vertical,
+      horizontal: king.position.horizontal - 4,
+    };
     const piece = this.getPieceByPosition(position, currentPlayerPieces);
     if(!piece){
       return false;
