@@ -38,6 +38,16 @@ export default class Pawn extends Piece {
     return { hasEaten, ate, enPassant };
   }
 
+  getAttacks(): Array<Position>{
+    let firstPos: Position = { ...this.position };
+    let secondPos: Position = { ...this.position };
+    firstPos.vertical += this.color === ColorEnum.WHITE ? 1 : -1;
+    secondPos.vertical += this.color === ColorEnum.WHITE ? 1 : -1;
+    firstPos.horizontal += 1;
+    secondPos.horizontal -= 1;
+    return [firstPos, secondPos];
+  }
+
   getMovements(
     currentPlayerPieces: Array<Piece>,
     opponentPieces: Array<Piece>

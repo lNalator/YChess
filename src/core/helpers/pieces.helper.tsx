@@ -151,4 +151,22 @@ export default class PiecesHelper {
       }
     })
   }
+
+  static isSafePosition(friendlyPieces: Array<Piece>, enemyPieces: Array<Piece>, position: Position): boolean {
+    const filteredPieces = enemyPieces.filter(piece => piece.name !== 'King' && piece.name !== 'Pawn');
+    const pawns = enemyPieces.filter(piece => piece.name === 'Pawn') as Pawn[];
+    const king = enemyPieces.find(piece => piece.name === 'King') as King;
+
+    const enemyMovements = filteredPieces.flatMap(piece => 
+      piece.getMovements(enemyPieces, friendlyPieces)
+    );
+    const pawnAttacks = pawns.flatMap(pawn => pawn.getAttacks());
+  
+    const pos = enemyMovements.find(pos => pos.vertical === position.vertical && pos.horizontal === position.horizontal);
+    const pawnPos = pawnAttacks.find(pos => pos.vertical === position.vertical && pos.horizontal === position.horizontal);
+    const kingPos = king.getAttacks().find(pos => pos.vertical === position.vertical && pos.horizontal === position.horizontal);
+    const isSafe: boolean = pos?.horizontal !== position.horizontal && pawnPos?.horizontal !== position.horizontal && kingPos?.horizontal !== position.horizontal;
+    
+    return isSafe;
+  }
 }
