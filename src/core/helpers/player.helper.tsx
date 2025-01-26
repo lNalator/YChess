@@ -75,7 +75,11 @@ export default class PlayerHelper {
     return playingPlayer.getPoints() - opponentPlayer.getPoints();
   }
 
-  /*static cantPlayWhenChecked(opponentPlayer: Player): boolean {
-    const opponentPieces
-  }*/
+  static cantPlayWhenChecked(opponentPlayer: Player, friendlyPieces: Piece[]): boolean {
+    const opponentPieces: Piece[] = opponentPlayer.pieces;
+    const enemyMovements = opponentPieces.flatMap(piece => 
+      piece.getFilteredMovements(opponentPieces, friendlyPieces)
+    );
+    return enemyMovements[0] === null || enemyMovements[0] === undefined;
+  }
 }
