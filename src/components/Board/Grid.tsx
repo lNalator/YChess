@@ -12,6 +12,7 @@ import { CastleEnum } from "@/core/enums/castle.enum";
 import PiecesHelper from "@/core/helpers/pieces.helper";
 import { ColorEnum } from "@/core/enums/color.enum";
 import Rook from "@/core/entities/rook.model";
+import Queen from "@/core/entities/queen.model";
 
 export default function Grid() {
   const [gameState, setGameState] = useAtom(gameStateAtom);
@@ -56,54 +57,44 @@ export default function Grid() {
         );
       }
 
-      // Déplacer aussi la tour si il y a roque
       if (afterMovement?.castle === CastleEnum.SMALL) {
-        const rookPosition =
-          selectedPiece.color === ColorEnum.WHITE
-            ? { vertical: 0, horizontal: 7 }
-            : { vertical: 7, horizontal: 7 };
-        const rookNextPosition =
-          selectedPiece.color === ColorEnum.WHITE
-            ? { vertical: 0, horizontal: 5 }
-            : { vertical: 7, horizontal: 5 };
-        const rook = PiecesHelper.getFriendlyPiecesByPosition(
-          rookPosition,
-          playingPlayer.pieces
-        ) as Rook;
-        rook.move(rookNextPosition);
-      } else if (afterMovement?.castle === CastleEnum.LARGE) {
-        const rookPosition =
-          selectedPiece.color === ColorEnum.WHITE
-            ? { vertical: 0, horizontal: 0 }
-            : { vertical: 7, horizontal: 0 };
-        const rookNextPosition =
-          selectedPiece.color === ColorEnum.WHITE
-            ? { vertical: 0, horizontal: 3 }
-            : { vertical: 7, horizontal: 3 };
-        const rook = PiecesHelper.getFriendlyPiecesByPosition(
-          rookPosition,
-          playingPlayer.pieces
-        ) as Rook;
-        rook.move(rookNextPosition);
+        PiecesHelper.moveRookForCastle(
+          playingPlayer,
+          selectedPiece,
+          CastleEnum.SMALL
+        );
+      }
+      if (afterMovement?.castle === CastleEnum.LARGE) {
+        PiecesHelper.moveRookForCastle(
+          playingPlayer,
+          selectedPiece,
+          CastleEnum.LARGE
+        );
       }
 
       if (afterMovement?.enPassant) {
-        const ennemyPawnPosition: Position =
-          selectedPiece.color === ColorEnum.WHITE
-            ? {
-                vertical: selectedPiece.position.vertical - 1,
-                horizontal: selectedPiece.position.horizontal,
-              }
-            : {
-                vertical: selectedPiece.position.vertical + 1,
-                horizontal: selectedPiece.position.horizontal,
-              };
-        const ennemyPawn = PiecesHelper.getEnemyPiecesByPosition(
-          ennemyPawnPosition,
-          notPlayingPlayer.pieces
-        ) as Piece;
-        selectedPiece.eat(ennemyPawn);
-        PlayerHelper.eatPiece(playingPlayer, notPlayingPlayer, ennemyPawn);
+        PiecesHelper.eatEnPassant(
+          selectedPiece,
+          playingPlayer,
+          notPlayingPlayer
+        );
+      }
+
+      if (selectedPiece.name === "Pawn") {
+        if (selectedPiece.color === ColorEnum.WHITE && vertical === 7) {
+          PiecesHelper.pawnPromotion(
+            selectedPiece,
+            { vertical, horizontal },
+            playingPlayer
+          );
+        }
+        if (selectedPiece.color === ColorEnum.BLACK && vertical === 0) {
+          PiecesHelper.pawnPromotion(
+            selectedPiece,
+            { vertical, horizontal },
+            playingPlayer
+          );
+        }
       }
 
       setSelectedPiece(null);

@@ -8,6 +8,10 @@ import Queen from "../entities/queen.model";
 import { ColorEnum } from "../enums/color.enum";
 import Position from "../interfaces/position";
 import Rook from "../entities/rook.model";
+import { AfterMovement } from "../interfaces/afterMovement";
+import { CastleEnum } from "../enums/castle.enum";
+import Player from "../entities/player.model";
+import PlayerHelper from "./player.helper";
 
 export default class PiecesHelper {
   static createTeam(color: ColorEnum): Array<Piece> {
@@ -55,7 +59,8 @@ export default class PiecesHelper {
     return piece || null;
   }
 
-  static getEnemyPiecesByPosition(position: Position,
+  static getEnemyPiecesByPosition(
+    position: Position,
     enemyPieces: Array<Piece>
   ): Piece | null {
     const piece = enemyPieces.find(
@@ -66,7 +71,8 @@ export default class PiecesHelper {
     return piece || null;
   }
 
-  static getFriendlyPiecesByPosition(position: Position,
+  static getFriendlyPiecesByPosition(
+    position: Position,
     friendlyPieces: Array<Piece>
   ): Piece | null {
     const piece = friendlyPieces.find(
@@ -84,22 +90,21 @@ export default class PiecesHelper {
     return king.isChecked;
   }
 
-  static canSmallCastle(king: King, currentPlayerPieces: Array<Piece>): boolean {
+  static canSmallCastle(
+    king: King,
+    currentPlayerPieces: Array<Piece>
+  ): boolean {
     let position: Position;
     position = {
       vertical: king.position.vertical,
       horizontal: king.position.horizontal + 3,
     };
     const piece = this.getPieceByPosition(position, currentPlayerPieces);
-    if(!piece){
+    if (!piece) {
       return false;
     }
     const rook: Rook = piece as Rook;
-    if (
-      king.isChecked ||
-      !king.isFirstMove ||
-      !rook.isFirstMove
-    ) {
+    if (king.isChecked || !king.isFirstMove || !rook.isFirstMove) {
       return false;
     }
     position.horizontal -= 1;
@@ -112,22 +117,21 @@ export default class PiecesHelper {
     return false;
   }
 
-  static canLargeCastle(king: King, currentPlayerPieces: Array<Piece>): boolean {
+  static canLargeCastle(
+    king: King,
+    currentPlayerPieces: Array<Piece>
+  ): boolean {
     let position: Position;
     position = {
       vertical: king.position.vertical,
       horizontal: king.position.horizontal - 4,
     };
     const piece = this.getPieceByPosition(position, currentPlayerPieces);
-    if(!piece){
+    if (!piece) {
       return false;
     }
     const rook: Rook = piece as Rook;
-    if (
-      king.isChecked ||
-      !king.isFirstMove ||
-      !rook.isFirstMove
-    ) {
+    if (king.isChecked || !king.isFirstMove || !rook.isFirstMove) {
       return false;
     }
     position.horizontal += 1;
@@ -143,12 +147,90 @@ export default class PiecesHelper {
     return false;
   }
 
+  static moveRookForCastle(
+    playingPlayer: Player,
+    kingPiece: Piece,
+    castle: string
+  ): void {
+    // Déplacer aussi la tour si il y a roque
+    if (castle === CastleEnum.SMALL) {
+      const rookPosition =
+        kingPiece.color === ColorEnum.WHITE
+          ? { vertical: 0, horizontal: 7 }
+          : { vertical: 7, horizontal: 7 };
+      const rookNextPosition =
+        kingPiece.color === ColorEnum.WHITE
+          ? { vertical: 0, horizontal: 5 }
+          : { vertical: 7, horizontal: 5 };
+      const rook = PiecesHelper.getFriendlyPiecesByPosition(
+        rookPosition,
+        playingPlayer.pieces
+      ) as Rook;
+      rook.move(rookNextPosition);
+    } else if (castle === CastleEnum.LARGE) {
+      const rookPosition =
+        kingPiece.color === ColorEnum.WHITE
+          ? { vertical: 0, horizontal: 0 }
+          : { vertical: 7, horizontal: 0 };
+      const rookNextPosition =
+        kingPiece.color === ColorEnum.WHITE
+          ? { vertical: 0, horizontal: 3 }
+          : { vertical: 7, horizontal: 3 };
+      const rook = PiecesHelper.getFriendlyPiecesByPosition(
+        rookPosition,
+        playingPlayer.pieces
+      ) as Rook;
+      rook.move(rookNextPosition);
+    }
+  }
+
+  static eatEnPassant(
+    pawn: Piece,
+    playingPlayer: Player,
+    notPlayingPlayer: Player
+  ): void {
+    const ennemyPawnPosition: Position =
+      pawn.color === ColorEnum.WHITE
+        ? {
+            vertical: pawn.position.vertical - 1,
+            horizontal: pawn.position.horizontal,
+          }
+        : {
+            vertical: pawn.position.vertical + 1,
+            horizontal: pawn.position.horizontal,
+          };
+    const ennemyPawn = PiecesHelper.getEnemyPiecesByPosition(
+      ennemyPawnPosition,
+      notPlayingPlayer.pieces
+    ) as Piece;
+    pawn.eat(ennemyPawn);
+    PlayerHelper.eatPiece(playingPlayer, notPlayingPlayer, ennemyPawn);
+  }
+
+  static pawnPromotion(
+    pawn: Piece,
+    { horizontal, vertical }: Position,
+    playingPlayer: Player
+  ): void {
+    const promotedQueen = new Queen(
+      { vertical, horizontal },
+      pawn.color,
+      pawn.id
+    );
+    const index = playingPlayer.pieces.findIndex(
+      (el) =>
+        el.position.horizontal === horizontal &&
+        el.position.vertical === vertical
+    );
+    playingPlayer.pieces[index] = promotedQueen;
+  }
+
   static resetDoubleJump(pieces: Array<Piece>): void {
-    pieces.forEach(piece =>{
+    pieces.forEach((piece) => {
       const pawn = piece as Pawn;
-      if(pawn.doubleJump){
+      if (pawn.doubleJump) {
         pawn.doubleJump = false;
       }
-    })
+    });
   }
 }
