@@ -42,7 +42,7 @@ export default abstract class Piece {
     enemyPieces: Array<Piece>, 
   ): Position[] {
     // Obtenir les mouvements possibles de la pièce
-    const possibleMovements = this.getMovements(enemyPieces, friendlyPieces);
+    const possibleMovements = this.getMovements(friendlyPieces, enemyPieces);
 
     // Filtrer les mouvements qui sortent le roi de l'échec
     return possibleMovements.filter(move => {
@@ -54,6 +54,12 @@ export default abstract class Piece {
     });
   }
 
+  public getAttacks(
+    currentPlayerPieces: Array<Piece>,
+    opponentPieces: Array<Piece>
+  ): Array<Position> {
+    return this.getMovements(currentPlayerPieces, opponentPieces);
+  }
 
   abstract getMovements(
     currentPlayerPieces: Array<Piece>,

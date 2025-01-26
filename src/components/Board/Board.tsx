@@ -26,7 +26,7 @@ export default function Board() {
         playingPlayer.pieces,
         notPlayingPlayer.pieces
       );
-      if(PiecesHelper.isKingInCheck(playingPlayer.pieces, notPlayingPlayer.pieces) && selectedPiece.name !== 'King'){
+      if(selectedPiece.name !== 'King'){
         possibleMoves = selectedPiece.getFilteredMovements(
           playingPlayer.pieces,
           notPlayingPlayer.pieces
@@ -104,9 +104,20 @@ export default function Board() {
         }
       }
 
+      if(PlayerHelper.cantPlay(notPlayingPlayer, playingPlayer.pieces)){
+        if(PiecesHelper.isKingInCheck(notPlayingPlayer.pieces, playingPlayer.pieces)){
+          gameState.reason.checkmate = true;
+        } else {
+          gameState.reason.stalemate = true;
+        }
+        gameState.hasGameEnded = true;
+        gameState.winner = playingPlayer;
+      }
+
       setSelectedPiece(null);
       PlayerHelper.switchPlayerTurn(players);
       setGameState({ ...gameState });
+      
     } else if (piece) {
       setSelectedPiece(piece);
     } else {

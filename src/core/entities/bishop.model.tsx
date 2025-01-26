@@ -11,9 +11,17 @@ export default class Bishop extends Piece {
     this.value = 3;
   }
 
+  getAttacks(
+      currentPlayerPieces: Array<Piece>,
+      opponentPieces: Array<Piece>
+    ):Array<Position>{
+      return this.getMovements(currentPlayerPieces, opponentPieces, true);
+  }
+
   getMovements(
     currentPlayerPieces: Array<Piece>,
-    opponentPieces: Array<Piece>
+    opponentPieces: Array<Piece>,
+    attacks?: boolean
   ): Array<Position> {
     const movements: Array<Position> = [];
 
@@ -55,6 +63,9 @@ export default class Bishop extends Piece {
             currentPlayerPieces
           )
         ) {
+          if(attacks){
+            movements.push({ ...currentPosition });
+          }
           break; // Arrête le parcours dans cette direction si une pièce amie est rencontrée
         } else {
           // Si aucune pièce n'est présente, ajouter la case aux mouvements possibles

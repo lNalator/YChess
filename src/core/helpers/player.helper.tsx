@@ -1,3 +1,4 @@
+import King from "../entities/king.model";
 import Piece from "../entities/piece.model";
 import Player from "../entities/player.model";
 import PiecesHelper from "./pieces.helper";
@@ -75,7 +76,14 @@ export default class PlayerHelper {
     return playingPlayer.getPoints() - opponentPlayer.getPoints();
   }
 
-  /*static cantPlayWhenChecked(opponentPlayer: Player): boolean {
-    const opponentPieces
-  }*/
+  static cantPlay(opponentPlayer: Player, friendlyPieces: Piece[]): boolean {
+    const opponentPieces: Piece[] = opponentPlayer.pieces.filter(piece => piece.name !== 'King');
+    const opponentKing: Piece = opponentPlayer.pieces.find(piece => piece.name === 'King') as King;
+    const enemyMovements = opponentPieces.flatMap(piece => 
+      piece.getFilteredMovements(opponentPlayer.pieces, friendlyPieces),
+    );
+    enemyMovements.push(...opponentKing.getMovements(opponentPieces, friendlyPieces));
+    console.log(enemyMovements);
+    return enemyMovements[0] === null || enemyMovements[0] === undefined;
+  }
 }
