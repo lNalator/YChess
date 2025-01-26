@@ -1,7 +1,8 @@
 import { ColorEnum } from "../enums/color.enum";
 import PiecesHelper from "../helpers/pieces.helper";
+import { AfterMovement } from "../interfaces/afterMovement";
 import Position from "../interfaces/position";
-import Piece, { afterMovement } from "./piece.model";
+import Piece from "./piece.model";
 
 export default class Pawn extends Piece {
   value: number;
@@ -15,7 +16,7 @@ export default class Pawn extends Piece {
     this.value = 1;
   }
 
-  public move(position: Position, piece?: Piece): afterMovement {
+  public move(position: Position, piece?: Piece): AfterMovement {
     let hasEaten: boolean = false;
     let ate: Piece | null = null;
     let enPassant: boolean = false;
@@ -25,7 +26,7 @@ export default class Pawn extends Piece {
       this.eat(piece);
       hasEaten = true;
       ate = piece;
-    }else if(position.horizontal !== this.position.horizontal) {
+    } else if (position.horizontal !== this.position.horizontal) {
       enPassant = true;
     }
     if (
@@ -127,11 +128,14 @@ export default class Pawn extends Piece {
       horizontal: horizontal + 1,
       vertical: vertical,
     };
-    const rightSquarePiece = PiecesHelper.getEnemyPiecesByPosition(newPosition5, opponentPieces);
+    const rightSquarePiece = PiecesHelper.getEnemyPiecesByPosition(
+      newPosition5,
+      opponentPieces
+    );
     if (rightSquarePiece !== null) {
       const enPassantPawn = rightSquarePiece as Pawn;
       if (enPassantPawn?.doubleJump) {
-        newPosition5.vertical += this.color === ColorEnum.WHITE ? 1 : -1 ;
+        newPosition5.vertical += this.color === ColorEnum.WHITE ? 1 : -1;
         movements.push(newPosition5);
       }
     }
@@ -139,11 +143,14 @@ export default class Pawn extends Piece {
       horizontal: horizontal - 1,
       vertical: vertical,
     };
-    const leftSquarePiece = PiecesHelper.getEnemyPiecesByPosition(newPosition6, opponentPieces);
+    const leftSquarePiece = PiecesHelper.getEnemyPiecesByPosition(
+      newPosition6,
+      opponentPieces
+    );
     if (leftSquarePiece !== null) {
       const enPassantPawn = leftSquarePiece as Pawn;
       if (enPassantPawn?.doubleJump) {
-        newPosition6.vertical += this.color === ColorEnum.WHITE ? 1 : -1 ;
+        newPosition6.vertical += this.color === ColorEnum.WHITE ? 1 : -1;
         movements.push(newPosition6);
       }
     }
