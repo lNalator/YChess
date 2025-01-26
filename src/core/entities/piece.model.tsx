@@ -50,7 +50,7 @@ export default abstract class Piece {
         const simulatedFriendlyPieces: Piece[] = PiecesHelper.simulateMove(friendlyPieces, this, move);
 
         // Vérifier si le roi est toujours en échec après le mouvement
-        return !PiecesHelper.isKingInCheck(simulatedFriendlyPieces, enemyPieces);
+        return !PiecesHelper.isKingInCheck(simulatedFriendlyPieces, enemyPieces, move);
     });
   }
 

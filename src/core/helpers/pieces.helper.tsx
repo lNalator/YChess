@@ -83,8 +83,12 @@ export default class PiecesHelper {
     return piece || null;
   }
 
-  static isKingInCheck(friendlyPieces: Array<Piece>, enemyPieces: Array<Piece>): boolean {
+  static isKingInCheck(friendlyPieces: Array<Piece>, enemyPieces: Array<Piece>, move?: Position): boolean {
     const kingPosition = friendlyPieces.find(piece => piece.name === 'King')?.position as Position;
+    if(move){
+      const newEnemyPieces = enemyPieces.filter(piece => piece.position.horizontal !== move.horizontal || piece.position.vertical !== move.vertical);
+      return !this.isSafePosition(friendlyPieces, newEnemyPieces, kingPosition);
+    }
 
     return !this.isSafePosition(friendlyPieces, enemyPieces, kingPosition);
   }

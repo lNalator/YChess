@@ -74,4 +74,8 @@ export default class PlayerHelper {
   ): number {
     return playingPlayer.getPoints() - opponentPlayer.getPoints();
   }
+
+  /*static cantPlayWhenChecked(opponentPlayer: Player): boolean {
+    const opponentPieces
+  }*/
 }
