@@ -26,7 +26,19 @@ export default function Board() {
         playingPlayer.pieces,
         notPlayingPlayer.pieces
       );
+      if(PiecesHelper.isKingInCheck(playingPlayer.pieces, notPlayingPlayer.pieces) && selectedPiece.name !== 'King'){
+        possibleMoves = selectedPiece.getFilteredMovements(
+          playingPlayer.pieces,
+          notPlayingPlayer.pieces
+        );
+      } else {
+        possibleMoves = selectedPiece.getMovements(
+          playingPlayer.pieces,
+          notPlayingPlayer.pieces
+        );
+      }  
     }
+
     return possibleMoves;
   };
 
