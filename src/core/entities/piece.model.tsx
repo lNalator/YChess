@@ -1,6 +1,7 @@
 import { CastleEnum } from "../enums/castle.enum";
 import { ColorEnum } from "../enums/color.enum";
 import { AfterMovement } from "../interfaces/afterMovement";
+import PiecesHelper from "../helpers/pieces.helper";
 import Position from "../interfaces/position";
 
 export default abstract class Piece {
@@ -35,6 +36,24 @@ export default abstract class Piece {
     piece.isAlive = false;
     piece.position = { horizontal: -1, vertical: -1 };
   }
+  
+  public getFilteredMovements(
+    friendlyPieces: Array<Piece>, 
+    enemyPieces: Array<Piece>, 
+  ): Position[] {
+    // Obtenir les mouvements possibles de la pièce
+    const possibleMovements = this.getMovements(enemyPieces, friendlyPieces);
+
+    // Filtrer les mouvements qui sortent le roi de l'échec
+    return possibleMovements.filter(move => {
+        // Simuler le mouvement
+        const simulatedFriendlyPieces: Piece[] = PiecesHelper.simulateMove(friendlyPieces, this, move);
+
+        // Vérifier si le roi est toujours en échec après le mouvement
+        return !PiecesHelper.isKingInCheck(simulatedFriendlyPieces, enemyPieces);
+    });
+  }
+
 
   abstract getMovements(
     currentPlayerPieces: Array<Piece>,
