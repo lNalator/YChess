@@ -36,12 +36,37 @@ export default class King extends Piece {
     return { hasEaten, ate, castle };
   }
 
+  getAttacks(): Array<Position> {
+    const movements: Array<Position> = [];
+    
+    const directions = [
+      { dx: -1, dy: -1 },
+      { dx: -1, dy: 0 },
+      { dx: -1, dy: 1 },
+      { dx: 0, dy: -1 },
+      { dx: 0, dy: 1 },
+      { dx: 1, dy: -1 },
+      { dx: 1, dy: 0 },
+      { dx: 1, dy: 1 },
+    ];
+
+    for (const direction of directions) {
+      let currentPosition = { ...this.position };
+
+      currentPosition.horizontal += direction.dx;
+      currentPosition.vertical += direction.dy;
+      
+      movements.push(currentPosition);
+    }
+    return movements;
+  }
+
   getMovements(
     currentPlayerPieces: Array<Piece>,
     opponentPieces: Array<Piece>
   ): Array<Position> {
     const movements: Array<Position> = [];
-
+    
     const directions = [
       { dx: -1, dy: -1 },
       { dx: -1, dy: 0 },
@@ -67,23 +92,51 @@ export default class King extends Piece {
         PiecesHelper.getPieceByPosition(currentPosition, [
           ...currentPlayerPieces,
           ...opponentPieces,
-        ])?.color !== this.color
+        ])?.color !== this.color &&
+        PiecesHelper.isSafePosition(currentPlayerPieces, opponentPieces, currentPosition)
       ) {
         movements.push(currentPosition);
       }
     }
 
-    if (PiecesHelper.canSmallCastle(this, currentPlayerPieces)) {
-      const newPosition = { ...this.position };
-      newPosition.horizontal += 2;
-      movements.push(newPosition);
-    }
-
-    if (PiecesHelper.canLargeCastle(this, currentPlayerPieces)) {
-      const newPosition = { ...this.position };
-      newPosition.horizontal -= 2;
-      movements.push(newPosition);
+    let castleSafe: boolean = true;
+    let castlePosition: Position = { ...this.position };
+    if(PiecesHelper.canSmallCastle(this, currentPlayerPieces)){
+      while(castlePosition.horizontal < 7){
+        castlePosition.horizontal += 1;
+        if(!PiecesHelper.isSafePosition(currentPlayerPieces, opponentPieces, castlePosition)){
+          castleSafe = false;
+        }
       }
+      if (
+        !this.isChecked &&
+        castleSafe
+      ) {
+        const newPosition = { ...this.position };
+        newPosition.horizontal += 2;
+        movements.push(newPosition);
+      }
+    }
+    
+    castleSafe = true;
+    castlePosition = { ...this.position };
+    if(PiecesHelper.canLargeCastle(this, currentPlayerPieces)){
+      while(castlePosition.horizontal > 0){
+        castlePosition.horizontal -= 1;
+        if(!PiecesHelper.isSafePosition(currentPlayerPieces, opponentPieces, castlePosition)){
+          castleSafe = false;
+        }
+      }
+      if (
+        !this.isChecked &&
+        castleSafe
+      ) {
+        const newPosition = { ...this.position };
+        newPosition.horizontal -= 2;
+        movements.push(newPosition);
+      }
+    }
+    
 
     return movements;
   }
