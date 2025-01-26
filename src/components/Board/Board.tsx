@@ -104,9 +104,20 @@ export default function Board() {
         }
       }
 
+      if(PlayerHelper.cantPlay(notPlayingPlayer, playingPlayer.pieces)){
+        if(PiecesHelper.isKingInCheck(notPlayingPlayer.pieces, playingPlayer.pieces)){
+          gameState.reason.checkmate = true;
+        } else {
+          gameState.reason.stalemate = true;
+        }
+        gameState.hasGameEnded = true;
+        gameState.winner = playingPlayer;
+      }
+
       setSelectedPiece(null);
       PlayerHelper.switchPlayerTurn(players);
       setGameState({ ...gameState });
+      
     } else if (piece) {
       setSelectedPiece(piece);
     } else {

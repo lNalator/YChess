@@ -54,6 +54,12 @@ export default abstract class Piece {
     });
   }
 
+  public getAttacks(
+    currentPlayerPieces: Array<Piece>,
+    opponentPieces: Array<Piece>
+  ): Array<Position> {
+    return this.getMovements(currentPlayerPieces, opponentPieces);
+  }
 
   abstract getMovements(
     currentPlayerPieces: Array<Piece>,
