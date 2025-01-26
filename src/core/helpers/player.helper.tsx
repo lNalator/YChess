@@ -22,8 +22,13 @@ export default class PlayerHelper {
     return players.find((player) => !player.isPlaying) as Player;
   }
 
-  static getOpponentPlayer(playingPlayer: Player, players: Array<Player>): Player {
-    return players.find((player) => player.color !== playingPlayer.color) as Player;
+  static getOpponentPlayer(
+    playingPlayer: Player,
+    players: Array<Player>
+  ): Player {
+    return players.find(
+      (player) => player.color !== playingPlayer.color
+    ) as Player;
   }
 
   static getPlayerByColor(players: Array<Player>, color: string): Player {
@@ -34,14 +39,13 @@ export default class PlayerHelper {
     players: Array<Player>,
     color: string
   ): Array<Piece> {
-    console.log(this.getPlayerByColor(players, this.getOpponentColor(color)));
     return this.getPlayerByColor(players, this.getOpponentColor(color)).pieces;
   }
 
   static switchPlayerTurn(players: Array<Player>): void {
     players.forEach((player) => {
       player.isPlaying = !player.isPlaying;
-      if(player.isPlaying){
+      if (player.isPlaying) {
         PiecesHelper.resetDoubleJump(player.pieces);
       }
     });
@@ -62,10 +66,12 @@ export default class PlayerHelper {
     opponentPlayer.pieces = opponentPlayer.pieces.filter(
       (p) => p.id !== piece.id
     );
-    playingPlayer.getScore();
   }
 
-  static getPlayersScoreDiff(playingPlayer: Player, opponentPlayer: Player): number {
-    return playingPlayer.score - opponentPlayer.score;
+  static getPlayersScoreDiff(
+    playingPlayer: Player,
+    opponentPlayer: Player
+  ): number {
+    return playingPlayer.getPoints() - opponentPlayer.getPoints();
   }
 }

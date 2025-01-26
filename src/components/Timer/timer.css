@@ -9,18 +9,34 @@
   align-items: center;
 }
 
+.timer-leftSide,
+.timer-rightSide {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1;
+  align-items: flex-end;
+  justify-content: space-around;
+  height: 100%;
+}
+
+.timer-score {
+  display: flex;
+  width: 5rem;
+  height: 5rem;
+  border-radius: 1rem;
+  background-color: #795633;
+  align-items: center;
+  justify-content: center;
+}
+
+.timer-rightSide {
+  align-items: flex-start;
+  height: 90%;
+}
+
 .timer-player-name {
   font-size: 2rem;
   margin-bottom: 1rem;
-}
-
-.time {
-  align-self: flex-end;
-  margin-right: 0.5rem;
-}
-
-.player1 .time {
-  align-self: flex-start;
 }
 
 .timer-player-eaten-pieces {

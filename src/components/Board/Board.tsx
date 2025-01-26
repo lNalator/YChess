@@ -1,5 +1,3 @@
-import Box from "./Box";
-import Row from "./Row";
 import "./board.css";
 import { useAtom } from "jotai";
 import Image from "next/image";
@@ -11,10 +9,8 @@ import Position from "@/core/interfaces/position";
 import { CastleEnum } from "@/core/enums/castle.enum";
 import PiecesHelper from "@/core/helpers/pieces.helper";
 import { ColorEnum } from "@/core/enums/color.enum";
-import Rook from "@/core/entities/rook.model";
-import Queen from "@/core/entities/queen.model";
 
-export default function Grid() {
+export default function Board() {
   const [gameState, setGameState] = useAtom(gameStateAtom);
   const { players }: GameState = gameState;
   const playingPlayer = PlayerHelper.getPlayingPlayer(players);
@@ -31,7 +27,6 @@ export default function Grid() {
         notPlayingPlayer.pieces
       );
     }
-
     return possibleMoves;
   };
 
@@ -110,7 +105,7 @@ export default function Grid() {
   return (
     <div className="grid">
       {[...Array(nbFiles)].map((_, vertical) => (
-        <Row key={vertical} className="row">
+        <div key={vertical} className="row">
           {[...Array(nbFiles)].map((_, horizontal) => {
             const isPossibleMove = possibleMoves().some(
               (move: any) =>
@@ -123,7 +118,7 @@ export default function Grid() {
                 p.position?.horizontal === horizontal
             );
             return (
-              <Box
+              <div
                 key={vertical * 10 + horizontal}
                 className={
                   ((vertical + horizontal) % 2 ? "light" : "dark") + " box"
@@ -155,10 +150,10 @@ export default function Grid() {
                     className="piece"
                   />
                 )}
-              </Box>
+              </div>
             );
           })}
-        </Row>
+        </div>
       ))}
     </div>
   );

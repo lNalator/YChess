@@ -5,6 +5,7 @@ import Image from "next/image";
 import PlayerHelper from "@/core/helpers/player.helper";
 import { useAtom } from "jotai";
 import { gameStateAtom } from "@/core/data/gameState";
+import GameButtons from "../GameButtons/GameButtons";
 
 export default function Timer({
   player,
@@ -13,24 +14,33 @@ export default function Timer({
   player: Player;
   className?: string;
 }>) {
-  const [gameState] = useAtom(gameStateAtom);
+  const [gameState, setGameState] = useAtom(gameStateAtom);
+  const { players, hasGameEnded } = gameState;
+  const oponnentPlayer = PlayerHelper.getOpponentPlayer(player, players);
   const [time, setTime] = useState(player.time); // Local state to track time
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const getTime = (timing: number) => {
+    if (hasGameEnded) {
+      clearInterval(intervalRef.current!);
+      return false;
+    }
+    
     if (timing <= 0) {
       clearInterval(intervalRef.current!);
       setTime(0);
+      handleLostByTime();
       return true;
     }
+    
     setTime(timing - 1);
     player.time = timing - 1; // Update player time
     return false;
   };
 
   useEffect(() => {
-    if (player.isPlaying) {
+    if (player.isPlaying && player.time > 0) {
       intervalRef.current = setInterval(() => {
         getTime(player.time);
       }, 1000);
@@ -60,8 +70,20 @@ export default function Timer({
 
   const playerPointDifference = PlayerHelper.getPlayersScoreDiff(
     player,
-    PlayerHelper.getOpponentPlayer(player, gameState.players)
+    oponnentPlayer
   );
+
+  function handleLostByTime() {
+    if (!hasGameEnded && time <= 0) {
+      oponnentPlayer.score++;
+      setGameState({
+        ...gameState,
+        hasGameEnded: true,
+        winner: oponnentPlayer,
+        reason: { timeout: true },
+      });
+    }
+  }
 
   return (
     <div className={"timer " + className}>
@@ -89,11 +111,17 @@ export default function Timer({
           )}
         </div>
       </div>
-      <div className="time">
-        <p>
-          {minutes < 10 ? `0${minutes} ` : minutes + " "}:
-          {seconds < 10 ? ` 0${seconds}` : " " + seconds}
-        </p>
+      <div className="timer-score">
+        <p>{player.score}</p>
+      </div>
+      <div className="timer-leftSide">
+        <div className="time">
+          <p>
+            {minutes < 10 ? `0${minutes} ` : minutes + " "}:
+            {seconds < 10 ? ` 0${seconds}` : " " + seconds}
+          </p>
+        </div>
+        <GameButtons player={player} />
       </div>
     </div>
   );
