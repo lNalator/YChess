@@ -18,16 +18,16 @@ export default class PlayerHelper {
     return players.find((player) => player.isPlaying) as Player;
   }
 
-  static getOpponentPlayer(players: Array<Player>): Player {
+  static getNotPlayingPlayer(players: Array<Player>): Player {
     return players.find((player) => !player.isPlaying) as Player;
+  }
+
+  static getOpponentPlayer(playingPlayer: Player, players: Array<Player>): Player {
+    return players.find((player) => player.color !== playingPlayer.color) as Player;
   }
 
   static getPlayerByColor(players: Array<Player>, color: string): Player {
     return players.find((player) => player.color === color) as Player;
-  }
-
-  static getPlayingPlayerColor(players: Array<Player>): string {
-    return this.getPlayingPlayer(players).color;
   }
 
   static getOpponentPieces(
@@ -63,5 +63,9 @@ export default class PlayerHelper {
       (p) => p.id !== piece.id
     );
     playingPlayer.getScore();
+  }
+
+  static getPlayersScoreDiff(playingPlayer: Player, opponentPlayer: Player): number {
+    return playingPlayer.score - opponentPlayer.score;
   }
 }

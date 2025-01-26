@@ -2,6 +2,9 @@ import { useEffect, useState, useRef } from "react";
 import Player from "@/core/entities/player.model";
 import "./timer.css";
 import Image from "next/image";
+import PlayerHelper from "@/core/helpers/player.helper";
+import { useAtom } from "jotai";
+import { gameStateAtom } from "@/core/data/gameState";
 
 export default function Timer({
   player,
@@ -10,6 +13,7 @@ export default function Timer({
   player: Player;
   className?: string;
 }>) {
+  const [gameState] = useAtom(gameStateAtom);
   const [time, setTime] = useState(player.time); // Local state to track time
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -54,6 +58,11 @@ export default function Timer({
     (a, b) => a[0].value - b[0].value
   );
 
+  const playerPointDifference = PlayerHelper.getPlayersScoreDiff(
+    player,
+    PlayerHelper.getOpponentPlayer(player, gameState.players)
+  );
+
   return (
     <div className={"timer " + className}>
       <div className="timer-rightSide">
@@ -75,6 +84,9 @@ export default function Timer({
               ))}
             </div>
           ))}
+          {playerPointDifference > 0 && (
+            <div className="eaten-piece-score">+ {playerPointDifference}</div>
+          )}
         </div>
       </div>
       <div className="time">
