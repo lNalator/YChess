@@ -10,6 +10,7 @@ export default class Player {
   time: number;
   pieces: Array<Piece>;
   eatenPieces: Array<Piece>;
+  isChecked: boolean;
 
   constructor(name: string, color: string, isPlaying: boolean, time: number) {
     this.name = name;
@@ -19,6 +20,7 @@ export default class Player {
     this.pieces = PiecesHelper.createTeam(color as ColorEnum);
     this.eatenPieces = [];
     this.score = 0;
+    this.isChecked = false;
   }
 
   getScore() {

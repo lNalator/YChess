@@ -77,12 +77,12 @@ export default class PiecesHelper {
     return piece || null;
   }
 
-  static isKingChecked(allPieces: Array<Piece>, color: ColorEnum): boolean {
-    const king: King = allPieces.filter(
-      (piece) => piece.color === color && piece instanceof King
-    )[0] as King;
-    return king.isChecked;
+  static isKingInCheck(friendlyPieces: Array<Piece>, enemyPieces: Array<Piece>): boolean {
+    const kingPosition = friendlyPieces.find(piece => piece.name === 'King')?.position as Position;
+
+    return !this.isSafePosition(friendlyPieces, enemyPieces, kingPosition);
   }
+
 
   static canSmallCastle(king: King, currentPlayerPieces: Array<Piece>): boolean {
     let position: Position;
@@ -169,4 +169,18 @@ export default class PiecesHelper {
     
     return isSafe;
   }
+
+  static simulateMove(friendlyPieces: Array<Piece>, piece: Piece, newPosition: Position): Array<Piece> {
+    // Créer une copie des pièces alliées
+    const simulatedPieces = friendlyPieces.map(p => {
+        // Si c'est la pièce courante, mettre à jour sa position
+        if (p === piece) {
+            return { ...p, position: newPosition } as Piece;
+        }
+        return { ...p } as Piece;
+    });
+
+    return simulatedPieces;
+  }
+
 }

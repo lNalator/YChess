@@ -25,10 +25,17 @@ export default function Grid() {
   const possibleMoves = () => {
     let possibleMoves: Array<Position> = [];
     if (selectedPiece && selectedPiece.color === playingPlayer.color) {
-      possibleMoves = selectedPiece.getMovements(
-        playingPlayer.pieces,
-        opponentPlayer.pieces
-      );
+      if(PiecesHelper.isKingInCheck(playingPlayer.pieces, opponentPlayer.pieces) && selectedPiece.name !== 'King'){
+        possibleMoves = selectedPiece.getFilteredMovements(
+          playingPlayer.pieces,
+          opponentPlayer.pieces
+        );
+      } else {
+        possibleMoves = selectedPiece.getMovements(
+          playingPlayer.pieces,
+          opponentPlayer.pieces
+        );
+      }  
     }
 
     return possibleMoves;
@@ -46,6 +53,7 @@ export default function Grid() {
       selectedPiece.color === PlayerHelper.getPlayingPlayerColor(players) &&
       isPossibleMove
     ) {
+      console.log(playingPlayer.isChecked);
       // Déplacer la pièce si la case est un mouvement possible
       const afterMovement = selectedPiece.move({ vertical, horizontal }, piece);
       if (afterMovement.hasEaten && afterMovement.ate) {
