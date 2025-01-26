@@ -1,14 +1,8 @@
 import { CastleEnum } from "../enums/castle.enum";
 import { ColorEnum } from "../enums/color.enum";
+import { AfterMovement } from "../interfaces/afterMovement";
 import PiecesHelper from "../helpers/pieces.helper";
 import Position from "../interfaces/position";
-
-export interface afterMovement {
-  hasEaten: boolean;
-  ate: Piece | null;
-  castle?: CastleEnum | null;
-  enPassant?: boolean;
-}
 
 export default abstract class Piece {
   public id: string;
@@ -26,7 +20,7 @@ export default abstract class Piece {
     this.id = id;
   }
 
-  public move(position: Position, piece?: Piece): afterMovement {
+  public move(position: Position, piece?: Piece): AfterMovement {
     let hasEaten: boolean = false;
     let ate: Piece | null = null;
     if (piece) {
@@ -61,5 +55,8 @@ export default abstract class Piece {
   }
 
 
-  abstract getMovements(currentPlayerPieces: Array<Piece>, opponentPieces: Array<Piece>): Array<Position>;
+  abstract getMovements(
+    currentPlayerPieces: Array<Piece>,
+    opponentPieces: Array<Piece>
+  ): Array<Position>;
 }

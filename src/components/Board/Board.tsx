@@ -1,5 +1,3 @@
-import Box from "./Box";
-import Row from "./Row";
 import "./board.css";
 import { useAtom } from "jotai";
 import Image from "next/image";
@@ -11,13 +9,12 @@ import Position from "@/core/interfaces/position";
 import { CastleEnum } from "@/core/enums/castle.enum";
 import PiecesHelper from "@/core/helpers/pieces.helper";
 import { ColorEnum } from "@/core/enums/color.enum";
-import Rook from "@/core/entities/rook.model";
 
-export default function Grid() {
+export default function Board() {
   const [gameState, setGameState] = useAtom(gameStateAtom);
   const { players }: GameState = gameState;
   const playingPlayer = PlayerHelper.getPlayingPlayer(players);
-  const opponentPlayer = PlayerHelper.getOpponentPlayer(players);
+  const notPlayingPlayer = PlayerHelper.getNotPlayingPlayer(players);
 
   const [selectedPiece, setSelectedPiece] = useState(null as Piece | null);
   const nbFiles = 8;
@@ -25,19 +22,11 @@ export default function Grid() {
   const possibleMoves = () => {
     let possibleMoves: Array<Position> = [];
     if (selectedPiece && selectedPiece.color === playingPlayer.color) {
-      if(PiecesHelper.isKingInCheck(playingPlayer.pieces, opponentPlayer.pieces) && selectedPiece.name !== 'King'){
-        possibleMoves = selectedPiece.getFilteredMovements(
-          playingPlayer.pieces,
-          opponentPlayer.pieces
-        );
-      } else {
-        possibleMoves = selectedPiece.getMovements(
-          playingPlayer.pieces,
-          opponentPlayer.pieces
-        );
-      }  
+      possibleMoves = selectedPiece.getMovements(
+        playingPlayer.pieces,
+        notPlayingPlayer.pieces
+      );
     }
-
     return possibleMoves;
   };
 
@@ -50,39 +39,59 @@ export default function Grid() {
   ) => {
     if (
       selectedPiece &&
-      selectedPiece.color === PlayerHelper.getPlayingPlayerColor(players) &&
+      selectedPiece.color === playingPlayer.color &&
       isPossibleMove
     ) {
-      console.log(playingPlayer.isChecked);
       // Déplacer la pièce si la case est un mouvement possible
       const afterMovement = selectedPiece.move({ vertical, horizontal }, piece);
       if (afterMovement.hasEaten && afterMovement.ate) {
-        PlayerHelper.eatPiece(playingPlayer, opponentPlayer, afterMovement.ate);
-      }
-      
-      // Déplacer aussi la tour si il y a roque
-      if(afterMovement?.castle === CastleEnum.SMALL){
-        const rookPosition = selectedPiece.color === ColorEnum.WHITE ? { vertical: 0, horizontal: 7 } : { vertical: 7, horizontal: 7 };
-        const rookNextPosition = selectedPiece.color === ColorEnum.WHITE ? { vertical: 0, horizontal: 5 } : { vertical: 7, horizontal: 5 };
-        const rook = PiecesHelper.getFriendlyPiecesByPosition(rookPosition, playingPlayer.pieces) as Rook;
-        rook.move(rookNextPosition);
-      }
-      else if(afterMovement?.castle === CastleEnum.LARGE) {
-        const rookPosition = selectedPiece.color === ColorEnum.WHITE ? { vertical: 0, horizontal: 0 } : { vertical: 7, horizontal: 0 };
-        const rookNextPosition = selectedPiece.color === ColorEnum.WHITE ? { vertical: 0, horizontal: 3 } : { vertical: 7, horizontal: 3 };
-        const rook = PiecesHelper.getFriendlyPiecesByPosition(rookPosition, playingPlayer.pieces) as Rook;
-        rook.move(rookNextPosition);
+        PlayerHelper.eatPiece(
+          playingPlayer,
+          notPlayingPlayer,
+          afterMovement.ate
+        );
       }
 
-      if(afterMovement?.enPassant) {
-        const ennemyPawnPosition: Position = selectedPiece.color === ColorEnum.WHITE 
-        ? { vertical: selectedPiece.position.vertical - 1, horizontal: selectedPiece.position.horizontal } 
-        : { vertical: selectedPiece.position.vertical + 1, horizontal: selectedPiece.position.horizontal };
-        const ennemyPawn = PiecesHelper.getEnemyPiecesByPosition(ennemyPawnPosition, opponentPlayer.pieces) as Piece;
-        selectedPiece.eat(ennemyPawn);
-        PlayerHelper.eatPiece(playingPlayer, opponentPlayer, ennemyPawn);
+      if (afterMovement?.castle === CastleEnum.SMALL) {
+        PiecesHelper.moveRookForCastle(
+          playingPlayer,
+          selectedPiece,
+          CastleEnum.SMALL
+        );
       }
-      
+      if (afterMovement?.castle === CastleEnum.LARGE) {
+        PiecesHelper.moveRookForCastle(
+          playingPlayer,
+          selectedPiece,
+          CastleEnum.LARGE
+        );
+      }
+
+      if (afterMovement?.enPassant) {
+        PiecesHelper.eatEnPassant(
+          selectedPiece,
+          playingPlayer,
+          notPlayingPlayer
+        );
+      }
+
+      if (selectedPiece.name === "Pawn") {
+        if (selectedPiece.color === ColorEnum.WHITE && vertical === 7) {
+          PiecesHelper.pawnPromotion(
+            selectedPiece,
+            { vertical, horizontal },
+            playingPlayer
+          );
+        }
+        if (selectedPiece.color === ColorEnum.BLACK && vertical === 0) {
+          PiecesHelper.pawnPromotion(
+            selectedPiece,
+            { vertical, horizontal },
+            playingPlayer
+          );
+        }
+      }
+
       setSelectedPiece(null);
       PlayerHelper.switchPlayerTurn(players);
       setGameState({ ...gameState });
@@ -96,7 +105,7 @@ export default function Grid() {
   return (
     <div className="grid">
       {[...Array(nbFiles)].map((_, vertical) => (
-        <Row key={vertical} className="row">
+        <div key={vertical} className="row">
           {[...Array(nbFiles)].map((_, horizontal) => {
             const isPossibleMove = possibleMoves().some(
               (move: any) =>
@@ -109,7 +118,7 @@ export default function Grid() {
                 p.position?.horizontal === horizontal
             );
             return (
-              <Box
+              <div
                 key={vertical * 10 + horizontal}
                 className={
                   ((vertical + horizontal) % 2 ? "light" : "dark") + " box"
@@ -141,10 +150,10 @@ export default function Grid() {
                     className="piece"
                   />
                 )}
-              </Box>
+              </div>
             );
           })}
-        </Row>
+        </div>
       ))}
     </div>
   );

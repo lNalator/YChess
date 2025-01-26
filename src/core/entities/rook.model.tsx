@@ -1,7 +1,8 @@
 import { ColorEnum } from "../enums/color.enum";
 import PiecesHelper from "../helpers/pieces.helper";
+import { AfterMovement } from "../interfaces/afterMovement";
 import Position from "../interfaces/position";
-import Piece, { afterMovement } from "./piece.model";
+import Piece from "./piece.model";
 
 export default class Rook extends Piece {
   value: number;
@@ -13,7 +14,7 @@ export default class Rook extends Piece {
     this.isFirstMove = true;
   }
 
-  public move(position: Position, piece?: Piece): afterMovement {
+  public move(position: Position, piece?: Piece): AfterMovement {
     let hasEaten: boolean = false;
     let ate: Piece | null = null;
     this.isFirstMove = false;

@@ -1,16 +1,17 @@
 "use client";
 import { useState } from "react";
 import Timer from "@/components/Timer/Timer";
-import Grid from "@/components/Board/Grid";
+import Board from "@/components/Board/Board";
 import MenuOverlay from "@/components/MenuOverlay/MenuOverlay";
 import PlayerHelper from "@/core/helpers/player.helper";
 import "./page.css";
 import { useAtom } from "jotai";
 import { GameState, gameStateAtom } from "@/core/data/gameState";
+import GameOverOverlay from "@/components/gameOverOverlay/GameOverOverlay";
 
 export default function Home() {
   const [gameState, setGameState] = useAtom(gameStateAtom);
-  const { players }: GameState = gameState;
+  const { players, hasGameEnded }: GameState = gameState;
   const [isMenuOpen, setIsMenuOpen] = useState(true);
 
   function handleMenuClicked(e?: any) {
@@ -19,6 +20,12 @@ export default function Home() {
       setGameState({ ...gameState });
     }
     setIsMenuOpen(!isMenuOpen);
+  }
+
+  function handleGameOverClicked(e?: any) {
+    if (e) {
+      PlayerHelper.setPlayerTime(players, e);
+    }
   }
 
   return (
@@ -31,11 +38,17 @@ export default function Home() {
           handleMenuClicked(e);
         }}
         open={isMenuOpen}
-      ></MenuOverlay>
+      />
+      <GameOverOverlay
+        open={hasGameEnded}
+        onClickFunction={(e) => {
+          handleGameOverClicked(e);
+        }}
+      />
       <div className="timerContainer">
         <Timer player={players[1]} className="player2" />
       </div>
-      <Grid />
+      <Board />
       <div className="timerContainer">
         <Timer player={players[0]} className="player1" />
       </div>
