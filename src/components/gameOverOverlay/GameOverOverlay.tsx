@@ -1,24 +1,22 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { gameStateAtom } from "@/core/data/gameState";
 import { useAtom } from "jotai";
 import { GameHelper } from "@/core/helpers/game.helper";
 import "./gameOverOverlay.css";
 
 export default function GameOverOverlay({
-  onClickFunction,
   open,
-}: {
-  onClickFunction: (e: number) => void;
+}: Readonly<{
   open: boolean;
-}) {
+}>) {
   const [gameState, setGameState] = useAtom(gameStateAtom);
-  const [timeLimit, setTimeLimit] = useState(0);
-  const { reason, winner } = gameState;
+  const [timeLimit, setTimeLimit] = useState(300);
+  const { players, reason, winner } = gameState;
 
   const gameOverReason = GameHelper.getGameOverReason(reason);
 
   function handleRematch() {
-    onClickFunction(timeLimit);
+    GameHelper.resetPlayers(players, timeLimit);
     setGameState({
       ...gameState,
       hasGameEnded: false,
@@ -44,12 +42,7 @@ export default function GameOverOverlay({
           <option value={600}>10 min</option>
           <option value={900}>15 min</option>
         </select>
-        <button
-          className="gameOver-button"
-          onClick={() => {
-            handleRematch();
-          }}
-        >
+        <button className="gameOver-button" onClick={handleRematch}>
           Rematch
         </button>
       </div>

@@ -39,7 +39,7 @@ export default class King extends Piece {
 
   getAttacks(): Array<Position> {
     const movements: Array<Position> = [];
-    
+
     const directions = [
       { dx: -1, dy: -1 },
       { dx: -1, dy: 0 },
@@ -56,7 +56,7 @@ export default class King extends Piece {
 
       currentPosition.horizontal += direction.dx;
       currentPosition.vertical += direction.dy;
-      
+
       movements.push(currentPosition);
     }
     return movements;
@@ -67,7 +67,7 @@ export default class King extends Piece {
     opponentPieces: Array<Piece>
   ): Array<Position> {
     const movements: Array<Position> = [];
-    
+
     const directions = [
       { dx: -1, dy: -1 },
       { dx: -1, dy: 0 },
@@ -94,7 +94,11 @@ export default class King extends Piece {
           ...currentPlayerPieces,
           ...opponentPieces,
         ])?.color !== this.color &&
-        PiecesHelper.isSafePosition(currentPlayerPieces, opponentPieces, currentPosition)
+        PiecesHelper.isSafePosition(
+          currentPlayerPieces,
+          opponentPieces,
+          currentPosition
+        )
       ) {
         movements.push(currentPosition);
       }
@@ -102,42 +106,47 @@ export default class King extends Piece {
 
     let castleSafe: boolean = true;
     let castlePosition: Position = { ...this.position };
-    if(PiecesHelper.canSmallCastle(this, currentPlayerPieces)){
-      while(castlePosition.horizontal < 7){
+    if (PiecesHelper.canSmallCastle(this, currentPlayerPieces)) {
+      while (castlePosition.horizontal < 7) {
         castlePosition.horizontal += 1;
-        if(!PiecesHelper.isSafePosition(currentPlayerPieces, opponentPieces, castlePosition)){
+        if (
+          !PiecesHelper.isSafePosition(
+            currentPlayerPieces,
+            opponentPieces,
+            castlePosition
+          )
+        ) {
           castleSafe = false;
         }
       }
-      if (
-        !this.isChecked &&
-        castleSafe
-      ) {
+      if (!this.isChecked && castleSafe) {
         const newPosition = { ...this.position };
         newPosition.horizontal += 2;
         movements.push(newPosition);
       }
     }
-    
+
     castleSafe = true;
     castlePosition = { ...this.position };
-    if(PiecesHelper.canLargeCastle(this, currentPlayerPieces)){
-      while(castlePosition.horizontal > 0){
+    if (PiecesHelper.canLargeCastle(this, currentPlayerPieces)) {
+      while (castlePosition.horizontal > 0) {
         castlePosition.horizontal -= 1;
-        if(!PiecesHelper.isSafePosition(currentPlayerPieces, opponentPieces, castlePosition)){
+        if (
+          !PiecesHelper.isSafePosition(
+            currentPlayerPieces,
+            opponentPieces,
+            castlePosition
+          )
+        ) {
           castleSafe = false;
         }
       }
-      if (
-        !this.isChecked &&
-        castleSafe
-      ) {
+      if (!this.isChecked && castleSafe) {
         const newPosition = { ...this.position };
         newPosition.horizontal -= 2;
         movements.push(newPosition);
       }
     }
-    
 
     return movements;
   }
