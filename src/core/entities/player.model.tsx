@@ -12,15 +12,24 @@ export default class Player {
   eatenPieces: Array<Piece>;
   askedDraw: boolean;
 
-  constructor(name: string, color: string, isPlaying: boolean, time: number) {
+  constructor(
+    name: string,
+    color: string,
+    isPlaying: boolean,
+    time: number,
+    pieces = PiecesHelper.createTeam(color as ColorEnum),
+    eatenPieces = [],
+    score = 0,
+    askedDraw = false
+  ) {
     this.name = name;
     this.color = color;
     this.isPlaying = isPlaying;
     this.time = time;
-    this.pieces = PiecesHelper.createTeam(color as ColorEnum);
-    this.eatenPieces = [];
-    this.score = 0;
-    this.askedDraw = false;
+    this.pieces = pieces;
+    this.eatenPieces = eatenPieces;
+    this.score = score;
+    this.askedDraw = askedDraw;
   }
 
   getPoints() {

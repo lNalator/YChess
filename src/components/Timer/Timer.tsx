@@ -21,42 +21,42 @@ export default function Timer({
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  const getTime = (timing: number) => {
-    if (hasGameEnded) {
+  function getTime(timing: number) {
+    if (hasGameEnded || timing <= 0) {
       clearInterval(intervalRef.current!);
-      return false;
+      if (timing <= 0) {
+        setTime(Math.max(timing, 0));
+        handleLostByTime();
+      }
+      return;
     }
-    
-    if (timing <= 0) {
-      clearInterval(intervalRef.current!);
-      setTime(0);
-      handleLostByTime();
-      return true;
-    }
-    
+
     setTime(timing - 1);
-    player.time = timing - 1; // Update player time
-    return false;
-  };
+    player.time = timing - 1;
+  }
 
   useEffect(() => {
+    if (hasGameEnded) {
+      clearInterval(intervalRef.current!);
+      return;
+    }
+
     if (player.isPlaying && player.time > 0) {
       intervalRef.current = setInterval(() => {
         getTime(player.time);
       }, 1000);
     }
 
-    return () => clearInterval(intervalRef.current!); // Cleanup on unmount or state change
-  }, [player.isPlaying]); // Only re-run when `isPlaying` changes
+    return () => clearInterval(intervalRef.current!);
+  }, [player.isPlaying, hasGameEnded]);
 
   useEffect(() => {
-    setTime(player.time); // Sync local time with the player's time
-  }, [player.time]); // Trigger when `player.time` changes
+    setTime(player.time);
+  }, [player.time]);
 
   const minutes = Math.floor((time / 60) % 60);
   const seconds = Math.floor(time % 60);
 
-  // Group eaten pieces by type
   const groupedEatenPieces = player.eatenPieces.reduce((acc, piece) => {
     const key = piece.color + piece.name;
     acc[key] = acc[key] || [];

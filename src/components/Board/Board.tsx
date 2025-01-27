@@ -26,7 +26,7 @@ export default function Board() {
         playingPlayer.pieces,
         notPlayingPlayer.pieces
       );
-      if(selectedPiece.name !== 'King'){
+      if (selectedPiece.name !== "King") {
         possibleMoves = selectedPiece.getFilteredMovements(
           playingPlayer.pieces,
           notPlayingPlayer.pieces
@@ -36,7 +36,7 @@ export default function Board() {
           playingPlayer.pieces,
           notPlayingPlayer.pieces
         );
-      }  
+      }
     }
 
     return possibleMoves;
@@ -104,20 +104,42 @@ export default function Board() {
         }
       }
 
-      if(PlayerHelper.cantPlay(notPlayingPlayer, playingPlayer.pieces)){
-        if(PiecesHelper.isKingInCheck(notPlayingPlayer.pieces, playingPlayer.pieces)){
-          gameState.reason.checkmate = true;
+      if (PlayerHelper.cantPlay(notPlayingPlayer, playingPlayer.pieces)) {
+        if (
+          PiecesHelper.isKingInCheck(
+            notPlayingPlayer.pieces,
+            playingPlayer.pieces
+          )
+        ) {
+          playingPlayer.score++;
+          setGameState({
+            ...gameState,
+            hasGameEnded: true,
+            winner: playingPlayer,
+            reason: { checkmate: true },
+          });
+          setSelectedPiece(null);
+          PlayerHelper.switchPlayerTurn(players);
+          return;
         } else {
-          gameState.reason.stalemate = true;
+          players.forEach((player) => {
+            player.score += 0.5;
+          });
+          setGameState({
+            ...gameState,
+            hasGameEnded: true,
+            winner: null,
+            reason: { stalemate: true },
+          });
+          setSelectedPiece(null);
+          PlayerHelper.switchPlayerTurn(players);
+          return;
         }
-        gameState.hasGameEnded = true;
-        gameState.winner = playingPlayer;
       }
 
       setSelectedPiece(null);
       PlayerHelper.switchPlayerTurn(players);
       setGameState({ ...gameState });
-      
     } else if (piece) {
       setSelectedPiece(piece);
     } else {
@@ -140,6 +162,7 @@ export default function Board() {
                 p.position?.vertical === vertical &&
                 p.position?.horizontal === horizontal
             );
+
             return (
               <div
                 key={vertical * 10 + horizontal}

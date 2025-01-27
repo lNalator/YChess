@@ -1,18 +1,45 @@
 import React, { useState } from "react";
 import "./menuOverlay.css";
+import { GameHelper } from "@/core/helpers/game.helper";
+import { gameStateAtom } from "@/core/data/gameState";
+import { useAtom } from "jotai";
+import { RESET } from "jotai/utils";
 
 export default function MenuOverlay({
-  onClickFunction,
+  onClose,
   open,
 }: {
-  onClickFunction: (e: number) => void;
+  onClose: () => void;
   open: boolean;
 }) {
-  const [timeLimit, setTimeLimit] = useState(0);
+  const [gameState, setGameState] = useAtom(gameStateAtom);
+  const [timeLimit, setTimeLimit] = useState(300);
+  const { players } = gameState;
+
+  function handleGameStart() {
+    GameHelper.resetPlayers(players, timeLimit);
+    setGameState({
+      ...gameState,
+      hasGameEnded: false,
+      winner: null,
+      reason: {},
+    });
+    onClose();
+  }
+
+  function handleGameReset() {
+    setGameState(RESET);
+    GameHelper.resetPlayers(players, timeLimit);
+    setGameState({ ...gameState });
+    onClose();
+  }
 
   return (
     <div className={"menu-overlay " + (open ? "openned" : "closed")}>
       <div className="menu">
+        <button className="menu-close" onClick={onClose}>
+          X
+        </button>
         <h1>Menu</h1>
         <div className="menu-content">
           <p>Choose your time limit</p>
@@ -22,18 +49,14 @@ export default function MenuOverlay({
               setTimeLimit(parseInt(e.target.value));
             }}
           >
-            <option value={0}>Select time</option>
             <option value={300}>5 min</option>
             <option value={600}>10 min</option>
             <option value={900}>15 min</option>
           </select>
-          <button
-            onClick={() => {
-              onClickFunction(timeLimit);
-            }}
-          >
-            Start Game
-          </button>
+          <div className="menu-buttons">
+            <button onClick={handleGameStart}>Start Match</button>
+            <button onClick={handleGameReset}>Clean Game</button>
+          </div>
         </div>
       </div>
     </div>

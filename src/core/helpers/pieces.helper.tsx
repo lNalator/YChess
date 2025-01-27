@@ -83,16 +83,24 @@ export default class PiecesHelper {
     return piece || null;
   }
 
-  static isKingInCheck(friendlyPieces: Array<Piece>, enemyPieces: Array<Piece>, move?: Position): boolean {
-    const kingPosition = friendlyPieces.find(piece => piece.name === 'King')?.position as Position;
-    if(move){
-      const newEnemyPieces = enemyPieces.filter(piece => piece.position.horizontal !== move.horizontal || piece.position.vertical !== move.vertical);
+  static isKingInCheck(
+    friendlyPieces: Array<Piece>,
+    enemyPieces: Array<Piece>,
+    move?: Position
+  ): boolean {
+    const kingPosition = friendlyPieces.find((piece) => piece.name === "King")
+      ?.position as Position;
+    if (move) {
+      const newEnemyPieces = enemyPieces.filter(
+        (piece) =>
+          piece.position.horizontal !== move.horizontal ||
+          piece.position.vertical !== move.vertical
+      );
       return !this.isSafePosition(friendlyPieces, newEnemyPieces, kingPosition);
     }
 
     return !this.isSafePosition(friendlyPieces, enemyPieces, kingPosition);
   }
-
 
   static canSmallCastle(
     king: King,
@@ -238,35 +246,63 @@ export default class PiecesHelper {
     });
   }
 
-  static isSafePosition(friendlyPieces: Array<Piece>, enemyPieces: Array<Piece>, position: Position): boolean {
-    const filteredPieces = enemyPieces.filter(piece => piece.name !== 'King' && piece.name !== 'Pawn');
-    const pawns = enemyPieces.filter(piece => piece.name === 'Pawn') as Pawn[];
-    const king = enemyPieces.find(piece => piece.name === 'King') as King;
+  static isSafePosition(
+    friendlyPieces: Array<Piece>,
+    enemyPieces: Array<Piece>,
+    position: Position
+  ): boolean {
+    const filteredPieces = enemyPieces.filter(
+      (piece) => piece.name !== "King" && piece.name !== "Pawn"
+    );
+    const pawns = enemyPieces.filter(
+      (piece) => piece.name === "Pawn"
+    ) as Pawn[];
+    const king = enemyPieces.find((piece) => piece.name === "King") as King;
 
-    const enemyMovements = filteredPieces.flatMap(piece => 
+    const enemyMovements = filteredPieces.flatMap((piece) =>
       piece.getAttacks(enemyPieces, friendlyPieces)
     );
-    const pawnAttacks = pawns.flatMap(pawn => pawn.getAttacks());
-  
-    const pos = enemyMovements.find(pos => pos.vertical === position.vertical && pos.horizontal === position.horizontal);
-    const pawnPos = pawnAttacks.find(pos => pos.vertical === position.vertical && pos.horizontal === position.horizontal);
-    const kingPos = king.getAttacks().find(pos => pos.vertical === position.vertical && pos.horizontal === position.horizontal);
-    const isSafe: boolean = pos?.horizontal !== position.horizontal && pawnPos?.horizontal !== position.horizontal && kingPos?.horizontal !== position.horizontal;
-    
+    const pawnAttacks = pawns.flatMap((pawn) => pawn.getAttacks());
+
+    const pos = enemyMovements.find(
+      (pos) =>
+        pos.vertical === position.vertical &&
+        pos.horizontal === position.horizontal
+    );
+    const pawnPos = pawnAttacks.find(
+      (pos) =>
+        pos.vertical === position.vertical &&
+        pos.horizontal === position.horizontal
+    );
+    const kingPos = king
+      .getAttacks()
+      .find(
+        (pos) =>
+          pos.vertical === position.vertical &&
+          pos.horizontal === position.horizontal
+      );
+    const isSafe: boolean =
+      pos?.horizontal !== position.horizontal &&
+      pawnPos?.horizontal !== position.horizontal &&
+      kingPos?.horizontal !== position.horizontal;
+
     return isSafe;
   }
 
-  static simulateMove(friendlyPieces: Array<Piece>, piece: Piece, newPosition: Position): Array<Piece> {
+  static simulateMove(
+    friendlyPieces: Array<Piece>,
+    piece: Piece,
+    newPosition: Position
+  ): Array<Piece> {
     // Créer une copie des pièces alliées
-    const simulatedPieces = friendlyPieces.map(p => {
-        // Si c'est la pièce courante, mettre à jour sa position
-        if (p === piece) {
-            return { ...p, position: newPosition } as Piece;
-        }
-        return { ...p } as Piece;
+    const simulatedPieces = friendlyPieces.map((p) => {
+      // Si c'est la pièce courante, mettre à jour sa position
+      if (p === piece) {
+        return { ...p, position: newPosition } as Piece;
+      }
+      return { ...p } as Piece;
     });
 
     return simulatedPieces;
   }
-
 }

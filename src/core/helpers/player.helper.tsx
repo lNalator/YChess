@@ -83,7 +83,6 @@ export default class PlayerHelper {
       piece.getFilteredMovements(opponentPlayer.pieces, friendlyPieces),
     );
     enemyMovements.push(...opponentKing.getMovements(opponentPieces, friendlyPieces));
-    console.log(enemyMovements);
     return enemyMovements[0] === null || enemyMovements[0] === undefined;
   }
 }
