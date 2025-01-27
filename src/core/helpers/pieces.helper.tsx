@@ -259,9 +259,9 @@ export default class PiecesHelper {
     ) as Pawn[];
     const king = enemyPieces.find((piece) => piece.name === "King") as King;
 
-    const enemyMovements = filteredPieces.flatMap((piece) =>
-      piece.getAttacks(enemyPieces, friendlyPieces)
-    );
+    const enemyMovements = filteredPieces.flatMap((piece) => {
+      return piece.getAttacks(enemyPieces, friendlyPieces);
+    });
     const pawnAttacks = pawns.flatMap((pawn) => pawn.getAttacks());
 
     const pos = enemyMovements.find(

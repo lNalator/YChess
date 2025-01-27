@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { gameStateAtom } from "@/core/data/gameState";
 import { useAtom } from "jotai";
 import { GameHelper } from "@/core/helpers/game.helper";

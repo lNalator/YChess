@@ -31,6 +31,14 @@ export class GameHelper {
     });
   }
 
+  static newGame(chosenTime: number): GameState {
+    const game = this.startGame();
+    game.players.forEach((player) => {
+      player.time = chosenTime;
+    });
+    return game;
+  }
+
   static getGameOverReason(reason: reason): string {
     if (reason.draw && reason.agreement) {
       return "Draw by agreement";

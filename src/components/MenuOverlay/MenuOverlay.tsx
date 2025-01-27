@@ -29,8 +29,12 @@ export default function MenuOverlay({
 
   function handleGameReset() {
     setGameState(RESET);
-    GameHelper.resetPlayers(players, timeLimit);
-    setGameState({ ...gameState });
+    const newGame = GameHelper.newGame(timeLimit);
+    setGameState((prev: any) => (prev = newGame));
+    onClose();
+  }
+
+  function closeMenu() {
     onClose();
   }
 
@@ -54,7 +58,8 @@ export default function MenuOverlay({
             <option value={900}>15 min</option>
           </select>
           <div className="menu-buttons">
-            <button onClick={handleGameStart}>Start Match</button>
+            <button onClick={handleGameStart}>Start new match</button>
+            <button onClick={closeMenu}>Continue</button>
             <button onClick={handleGameReset}>Clean Game</button>
           </div>
         </div>
