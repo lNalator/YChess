@@ -187,8 +187,9 @@ export default function Board() {
                 ></div>
                 {piece && (
                   <Image
-                    src={`/imgs/${Array.from(piece.color.toLowerCase())[0]}${
-                      Array.from(piece.name.toLowerCase())[0]
+                    src={`/imgs/${
+                      Array.from(piece.color.toLowerCase())[0] +
+                      piece.name.toLowerCase()
                     }.png`}
                     fill={true}
                     sizes="max-width: 100px, max-height: 100px"

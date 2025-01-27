@@ -60,11 +60,11 @@ function reviver(key: any, value: any) {
   if (
     value &&
     typeof value === "object" &&
-    value.className &&
-    classRegistry[value.className as keyof typeof classRegistry]
+    value.name &&
+    classRegistry[value.name as keyof typeof classRegistry]
   ) {
     const ClassConstructor =
-      classRegistry[value.className as keyof typeof classRegistry];
+      classRegistry[value.name as keyof typeof classRegistry];
     return Object.assign(
       new ClassConstructor(value.position, value.color, value.id),
       value

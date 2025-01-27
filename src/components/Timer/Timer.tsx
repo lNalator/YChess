@@ -74,15 +74,13 @@ export default function Timer({
   );
 
   function handleLostByTime() {
-    if (!hasGameEnded && time <= 0) {
-      oponnentPlayer.score++;
-      setGameState({
-        ...gameState,
-        hasGameEnded: true,
-        winner: oponnentPlayer,
-        reason: { timeout: true },
-      });
-    }
+    oponnentPlayer.score++;
+    setGameState({
+      ...gameState,
+      hasGameEnded: true,
+      winner: oponnentPlayer,
+      reason: { timeout: true },
+    });
   }
 
   return (
@@ -97,8 +95,9 @@ export default function Timer({
                   key={i}
                   width={35}
                   height={35}
-                  src={`/imgs/${Array.from(piece.color.toLowerCase())[0]}${
-                    Array.from(piece.name.toLowerCase())[0]
+                  src={`/imgs/${
+                    Array.from(piece.color.toLowerCase())[0] +
+                    piece.name.toLowerCase()
                   }.png`}
                   alt={piece.color + " " + piece.name}
                   className="eatenPiece"

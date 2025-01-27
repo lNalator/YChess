@@ -7,7 +7,7 @@ export default class Knight extends Piece {
   value: number;
 
   constructor(position: Position, color: ColorEnum, id: string) {
-    super(position, color, "Night", id);
+    super(position, color, "Knight", id);
     this.value = 3;
   }
 
